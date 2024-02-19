@@ -9,6 +9,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "serve": "bun --inspect --hot src/server.ts"
+    "serve": "bun --inspect --hot src/server.ts",
+    "migrate": "bunx drizzle-kit generate:sqlite --schema ./schema.ts"
   }
 }
