@@ -1,45 +1,24 @@
-import { AIRTABLE_TOKEN } from '../.env.json'
-import Facebook from './Facebook'
-
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
   console.log(changeInfo.status, tab.url)
 
-  // if (
-  //   changeInfo.status !== 'complete' ||
-  //   !tab.url?.includes('https://www.facebook.com/marketplace/category/vehicles')
-  // )
-  //   return
-
-  // console.log('tab updated', tabId, changeInfo, tab)
+  if (
+    changeInfo.status !== 'complete' ||
+    !tab.url?.includes('https://www.facebook.com/marketplace/category/vehicles')
+  )
+    return
 
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     func: function () {
-      return document.body.innerHTML
+      return document.documentElement.outerHTML
     },
   })
   if (!result) return
 
-  console.log(result?.length)
+  const postResult = await fetch('http://localhost:3001/dom/facebook', {
+    method: 'POST',
+    body: JSON.stringify({ htmlString: result }),
+  })
 
-  const fb = new Facebook(result)
-
-  // const postResult = await fetch(
-  //   'https://api.airtable.com/v0/appci2SPrSoo1fQyC/tbl0BAuVD74IQ0Tjh',
-  //   {
-  //     method: 'POST',
-  //     headers: {
-  //       Authorization: `Bearer ${AIRTABLE_TOKEN}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       fields: {
-  //         Timestamp: new Date().toISOString(),
-  //         Content: result,
-  //       },
-  //     }),
-  //   }
-  // )
-
-  // console.log(postResult)
+  console.log(postResult)
 })

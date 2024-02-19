@@ -1,5 +1,11 @@
 import Facebook from './models/Facebook'
 
+const latest = await Facebook.getIndex()
+
+// await Bun.write(Bun.file('./example.html'), latest.html)
+
+Facebook.parseIndex(latest.html)
+
 interface Handlers {
   [key: string]: {
     [key: string]: (request: Request) => Promise<Response>

@@ -11,5 +11,8 @@
   "scripts": {
     "serve": "bun --inspect --hot src/server.ts",
     "migrate": "bunx drizzle-kit generate:sqlite --schema ./schema.ts"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1"
   }
 }
