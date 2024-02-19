@@ -9,5 +9,11 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules ext/node_modules bun.lockb ext/bun.lockb"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.29.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.14"
   }
 }
