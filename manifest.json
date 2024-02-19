@@ -10,7 +10,8 @@
     "default_popup": "public/index.html",
     "default_title": "Lead Reporter"
   },
-  "permissions": ["scripting", "tabs"],
+  "permissions": ["scripting", "tabs", "storage", "activeTab"],
+  "host_permissions": ["https://*/*", "*://*/*"],
   "background": {
     "service_worker": "out/background.js",
     "type": "module"
