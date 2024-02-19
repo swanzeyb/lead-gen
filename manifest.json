@@ -3,8 +3,11 @@
   "manifest_version": 3,
   "name": "Lead Reporter",
   "description": "",
+  "icons": {
+    "24": "public/icon_24.png"
+  },
   "action": {
-    "default_popup": "out/index.html",
+    "default_popup": "public/index.html",
     "default_title": "Lead Reporter"
   },
   "permissions": ["scripting", "tabs"],
