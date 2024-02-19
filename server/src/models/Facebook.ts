@@ -1,29 +1,39 @@
 import { db } from '../db'
 import { domFacebook } from '../schema'
+import { eq, desc } from 'drizzle-orm'
 
 export default class Facebook {
   static async addIndex(htmlString: string) {
     const id = crypto.randomUUID()
 
-    try {
-      // Prepare contents
-      const escaped = Bun.escapeHTML(htmlString)
-      const zipped = Bun.gzipSync(escaped)
-      const buffer = Buffer.from(zipped)
+    // Prepare contents
+    const escaped = Bun.escapeHTML(htmlString)
+    const zipped = Bun.gzipSync(escaped)
+    const buffer = Buffer.from(zipped)
 
-      // Write to DB
-      await db.insert(domFacebook).values([
-        {
-          id,
-          type: 'index',
-          timestamp: new Date(),
-          html: buffer,
-        },
-      ])
-    } catch (error) {
-      console.error(error)
-    }
+    // Write to DB
+    await db.insert(domFacebook).values([
+      {
+        id,
+        type: 'index',
+        timestamp: new Date(),
+        html: buffer,
+      },
+    ])
 
     return id
+  }
+
+  static async getIndex(id?: string) {
+    // Read from DB
+    const index = await (id
+      ? db.select().from(domFacebook).where(eq(domFacebook.id, id))
+      : db
+          .select()
+          .from(domFacebook)
+          .orderBy(desc(domFacebook.timestamp))
+          .limit(1))
+
+    return index
   }
 }
