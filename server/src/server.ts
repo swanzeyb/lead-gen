@@ -13,7 +13,7 @@ const handlers: Handlers = {
       if (!request.body) throw new Error('No body contents')
 
       // Add to index
-      const { htmlString } = await Bun.readableStreamToJSON(request.body)
+      const { htmlString } = (await request.json()) as { htmlString: string }
       const id = await Facebook.addIndex(htmlString)
 
       // Return with db id

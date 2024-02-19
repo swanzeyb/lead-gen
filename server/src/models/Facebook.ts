@@ -12,7 +12,7 @@ export default class Facebook {
       const buffer = Buffer.from(zipped)
 
       // Write to DB
-      db.insert(domFacebook).values([
+      await db.insert(domFacebook).values([
         {
           id,
           type: 'index',
