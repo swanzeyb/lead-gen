@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "name": "Lead Reporter",
+  "description": "",
+  "action": {
+    "default_popup": "out/index.html",
+    "default_title": "Lead Reporter"
+  },
+  "permissions": ["scripting", "tabs"],
+  "background": {
+    "service_worker": "out/background.js",
+    "type": "module"
+  }
+}
