@@ -4,7 +4,8 @@
   "module": "index.ts",
   "type": "module",
   "workspaces": [
-    "ext"
+    "ext",
+    "server"
   ],
   "scripts": {
     "clean": "rm -rf node_modules ext/node_modules bun.lockb ext/bun.lockb"
