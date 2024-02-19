@@ -1,13 +1,104 @@
+import { Observable } from 'rxjs'
 import { db } from '../db'
 import { domFacebook } from '../schema'
 import { eq, desc } from 'drizzle-orm'
-import { Observable } from 'rxjs'
+
+class IndexDetailSM {
+  private currentState:
+    | 'Start'
+    | 'Price'
+    | 'Title'
+    | 'Location'
+    | 'Miles'
+    | 'URL'
+  private currentData: {
+    URL?: string
+    price?: string
+    title?: string
+    location?: string
+    miles?: string
+  }
+
+  constructor() {
+    this.currentState = 'Start'
+    this.currentData = {}
+  }
+
+  input(str: string) {
+    switch (this.currentState) {
+      case 'Start':
+        if (str.includes('http')) {
+          this.currentState = 'URL'
+          this.currentData.URL = str
+        }
+        break
+      case 'URL':
+        if (str.includes('$')) {
+          this.currentState = 'Price'
+          this.currentData.price = str
+        }
+        break
+      case 'Price':
+        this.currentState = 'Title' // Moves to Title on next input
+        this.currentData.title = str
+        break
+      case 'Title':
+        this.currentState = 'Location' // Moves to Location on next input
+        this.currentData.location = str
+        break
+      case 'Location':
+        if (str.includes('mile')) {
+          this.currentState = 'Miles' // Accepts when input includes 'mile'
+          this.currentData.miles = str
+        }
+        break
+    }
+  }
+
+  isAccepted() {
+    return this.currentState === 'Miles'
+  }
+
+  getState() {
+    return this.currentState
+  }
+
+  getData() {
+    return this.currentData
+  }
+
+  reset() {
+    this.currentState = 'Start'
+  }
+}
 
 function observeIndex(htmlString: string) {
   return new Observable((subscriber) => {
+    const detailSM = new IndexDetailSM()
+
     const indexRewriter = new HTMLRewriter()
       .on('a[href*="/marketplace/item/"]', {
-        element: (element) => subscriber.next(element),
+        element: (element) => {
+          /*
+            Some car posts don't have mile data
+            If the last state isn't start, and we get a new link
+            Reset the state machine because we're on a new post
+            And discard the other data we digested
+          */
+          if (detailSM.getState() !== 'Start') {
+            detailSM.reset()
+          }
+
+          detailSM.input(`https://facebook.com${element.getAttribute('href')}`)
+        },
+        text: ({ text }) => {
+          if (text) detailSM.input(text)
+
+          // Check if we've received all details
+          if (detailSM.isAccepted()) {
+            subscriber.next(detailSM.getData())
+          }
+        },
       })
       .onDocument({
         end: () => subscriber.complete(),
@@ -18,15 +109,15 @@ function observeIndex(htmlString: string) {
 }
 
 export default class Facebook {
-  static async parseIndex(htmlString: string) {
-    const observer = observeIndex(htmlString)
+  static parseIndex(htmlString: string) {
+    const indexObserver = observeIndex(htmlString)
 
-    observer.subscribe({
+    indexObserver.subscribe({
       next(x) {
-        console.log('got value ' + x)
+        console.log('got value ', x)
       },
       error(err) {
-        console.error('something wrong occurred: ' + err)
+        console.error('something wrong occurred: ', err)
       },
       complete() {
         console.log('done')
