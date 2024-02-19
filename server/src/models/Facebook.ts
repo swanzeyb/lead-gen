@@ -84,6 +84,7 @@ class IndexDetailSM {
 
   reset() {
     this.currentState = 'Start'
+    this.currentData = {}
   }
 }
 
@@ -95,10 +96,7 @@ function observeIndex(htmlString: string) {
       .on('a[href*="/marketplace/item/"]', {
         element: (element) => {
           /*
-            Some car posts don't have mile data
-            If the last state isn't start, and we get a new link
-            Reset the state machine because we're on a new post
-            And discard the other data we digested
+            On the start of a new item, reset the state machine to clear any previous data
           */
           if (detailSM.getState() !== 'Start') {
             detailSM.reset()
@@ -136,7 +134,7 @@ export default class Facebook {
     const id = crypto.randomUUID()
 
     // Prepare contents
-    // const escaped = Bun.escapeHTML(htmlString)
+    // const escaped = Bun.escapeHTML(htmlString) // TODO: Broke HTML Rewriter
     const zipped = Bun.gzipSync(htmlString)
     const buffer = Buffer.from(zipped)
 
