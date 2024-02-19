@@ -1,6 +1,5 @@
 import { AIRTABLE_TOKEN } from '../.env.json'
-
-console.log(AIRTABLE_TOKEN)
+import Facebook from './Facebook'
 
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
   console.log(changeInfo.status, tab.url)
@@ -22,6 +21,8 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
   if (!result) return
 
   console.log(result?.length)
+
+  const fb = new Facebook(result)
 
   // const postResult = await fetch(
   //   'https://api.airtable.com/v0/appci2SPrSoo1fQyC/tbl0BAuVD74IQ0Tjh',
