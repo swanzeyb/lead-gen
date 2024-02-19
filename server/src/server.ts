@@ -5,6 +5,7 @@ const latest = await Facebook.getIndex()
 // await Bun.write(Bun.file('./example.html'), latest.html)
 
 const detail = await Facebook.parseIndex(latest.html)
+// await Bun.write(Bun.file('./example.json'), JSON.stringify(detail, null, 2))
 console.log(detail)
 
 interface Handlers {

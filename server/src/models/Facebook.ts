@@ -1,7 +1,25 @@
-import { Observable } from 'rxjs'
+import { Observable, concat, lastValueFrom } from 'rxjs'
 import { db } from '../db'
 import { domFacebook } from '../schema'
 import { eq, desc } from 'drizzle-orm'
+
+interface DetailExtraction {
+  URL?: string
+  fbID?: string
+  price?: string
+  title?: string
+  location?: string
+  miles?: string
+}
+
+interface DetailExtractionSettled {
+  URL: string
+  fbID: string
+  price: string
+  title: string
+  location: string
+  miles: string
+}
 
 class IndexDetailSM {
   private currentState:
@@ -11,13 +29,7 @@ class IndexDetailSM {
     | 'Location'
     | 'Miles'
     | 'URL'
-  private currentData: {
-    URL?: string
-    price?: string
-    title?: string
-    location?: string
-    miles?: string
-  }
+  private currentData: DetailExtraction
 
   constructor() {
     this.currentState = 'Start'
@@ -30,6 +42,9 @@ class IndexDetailSM {
         if (str.includes('http')) {
           this.currentState = 'URL'
           this.currentData.URL = str
+
+          // Extract item ID
+          this.currentData.fbID = str.match(/\/item\/(\d+)\//)?.[1]
         }
         break
       case 'URL':
@@ -92,11 +107,14 @@ function observeIndex(htmlString: string) {
           detailSM.input(`https://facebook.com${element.getAttribute('href')}`)
         },
         text: ({ text }) => {
-          if (text) detailSM.input(text)
+          if (text) {
+            detailSM.input(text)
 
-          // Check if we've received all details
-          if (detailSM.isAccepted()) {
-            subscriber.next(detailSM.getData())
+            // Check if we've received all details
+            if (detailSM.isAccepted()) {
+              subscriber.next(detailSM.getData())
+              detailSM.reset()
+            }
           }
         },
       })
@@ -111,18 +129,7 @@ function observeIndex(htmlString: string) {
 export default class Facebook {
   static parseIndex(htmlString: string) {
     const indexObserver = observeIndex(htmlString)
-
-    indexObserver.subscribe({
-      next(x) {
-        console.log('got value ', x)
-      },
-      error(err) {
-        console.error('something wrong occurred: ', err)
-      },
-      complete() {
-        console.log('done')
-      },
-    })
+    return lastValueFrom(concat(indexObserver))
   }
 
   static async addIndex(htmlString: string) {
