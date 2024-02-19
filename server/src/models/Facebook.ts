@@ -26,13 +26,24 @@ export default class Facebook {
 
   static async getIndex(id?: string) {
     // Read from DB
-    const index = await (id
-      ? db.select().from(domFacebook).where(eq(domFacebook.id, id))
+    const [index] = await (id
+      ? db.select().from(domFacebook).where(eq(domFacebook.id, id)).limit(1)
       : db
           .select()
           .from(domFacebook)
           .orderBy(desc(domFacebook.timestamp))
           .limit(1))
+
+    // Unpack contents
+    if (index) {
+      const unzipped = Bun.gunzipSync(index.html!)
+      const text = new TextDecoder().decode(unzipped)
+
+      return {
+        ...index,
+        html: text,
+      }
+    }
 
     return index
   }
