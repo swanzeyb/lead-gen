@@ -1,3 +1,5 @@
+import Facebook from './models/Facebook'
+
 interface Handlers {
   [key: string]: {
     [key: string]: (request: Request) => Promise<Response>
@@ -6,7 +8,19 @@ interface Handlers {
 
 const handlers: Handlers = {
   '/dom/facebook': {
-    POST: async (request: Request) => new Response(),
+    POST: async (request: Request) => {
+      // Require body contents
+      if (!request.body) throw new Error('No body contents')
+
+      // Add to index
+      const { htmlString } = await Bun.readableStreamToJSON(request.body)
+      const id = await Facebook.addIndex(htmlString)
+
+      // Return with db id
+      return new Response(JSON.stringify({ id }), {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    },
   },
 }
 
@@ -16,11 +30,11 @@ Bun.serve({
     const url = new URL(request.url)
     const handler = handlers[url.pathname]?.[request.method]
 
-    if (handler) {
+    try {
       const result = await handler(request)
       console.log(`${result.status} ${request.method} ${url.pathname}`)
       return result
-    }
+    } catch {}
 
     console.log(`404 ${request.method} ${url.pathname}`)
     return new Response(undefined, {

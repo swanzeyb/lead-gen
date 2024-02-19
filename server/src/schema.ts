@@ -1,7 +1,5 @@
 import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core'
 
-// crypto.randomUUID()
-
 export const domFacebook = sqliteTable('dom:facebook', {
   id: text('id').primaryKey(),
   type: text('type', { enum: ['index', 'post'] }),
