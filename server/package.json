@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "module": "server.ts",
+  "module": "src/server.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
@@ -9,6 +9,6 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "serve": "bun --hot server.ts"
+    "serve": "bun --inspect --hot src/server.ts"
   }
 }
