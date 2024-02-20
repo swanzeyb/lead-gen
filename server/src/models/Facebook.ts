@@ -125,9 +125,6 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   })
 }
 
-interface GetDetailArguments extends DetailExtraction {
-  employeeId: number
-}
 export default class Facebook {
   static setDetail(index: DetailExtractionSettled[]) {
     const items = index.map((item) => ({
