@@ -1,6 +1,5 @@
 import { ActivePathName } from './config'
 import { shouldRefresh, nextRefresh } from './refresh'
-import Timer from './Timer'
 import dayjs from 'dayjs'
 
 class FacebookIndex {
