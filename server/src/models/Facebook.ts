@@ -1,7 +1,8 @@
-import { Observable, concat, lastValueFrom } from 'rxjs'
 import { db } from '../db'
 import { domFacebook } from '../schema'
 import { eq, desc } from 'drizzle-orm'
+import { Observable, lastValueFrom } from 'rxjs'
+import { toArray } from 'rxjs/operators'
 
 interface DetailExtraction {
   URL?: string
@@ -127,7 +128,9 @@ function observeIndex(htmlString: string) {
 export default class Facebook {
   static parseIndex(htmlString: string) {
     const indexObserver = observeIndex(htmlString)
-    return lastValueFrom(concat(indexObserver))
+
+    // Reduce to array and return promise
+    return lastValueFrom(indexObserver.pipe(toArray()))
   }
 
   static async addIndex(htmlString: string) {
