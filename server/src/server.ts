@@ -1,26 +1,5 @@
 import Facebook from './models/Facebook'
 
-const latest = await Facebook.getIndex()
-
-// await Bun.write(Bun.file('./example.html'), latest.html)
-
-// console.log(latest)
-
-const detail = await Facebook.parseIndex(latest.html)
-// await Bun.write(Bun.file('./example.json'), JSON.stringify(detail, null, 2))
-// console.log(detail)
-
-const ids = await Facebook.setDetail(detail)
-
-// const get = await Facebook.getDetail({ limit: 100 })
-
-// console.log(detail[0])
-// console.log(get)
-
-// const ids = await Facebook.setDetail([detail[0]])
-
-console.log(ids)
-
 interface Handlers {
   [key: string]: {
     [key: string]: (request: Request) => Promise<Response>
@@ -35,11 +14,17 @@ const handlers: Handlers = {
 
       // Add to index
       const { htmlString } = (await request.json()) as { htmlString: string }
-      const id = await Facebook.addIndex(htmlString)
+      const domId = await Facebook.addIndex(htmlString)
+      const details = await Facebook.parseIndex(htmlString)
+      const carIds = await Facebook.setDetail(details)
 
-      // Return with db id
-      return new Response(JSON.stringify({ id }), {
-        headers: { 'Content-Type': 'application/json' },
+      console.log({ domId, carIds })
+
+      // Return with db id for dom content and ids for car ids
+      return new Response(JSON.stringify({ domId, carIds }), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
     },
   },
