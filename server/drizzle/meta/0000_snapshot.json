@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "2b4d873b-6edf-4156-b6d9-2d110ba9eef2",
+  "id": "3ea19ab9-e44a-48de-8ae8-11359dcf72cc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "dom:facebook": {
@@ -58,9 +58,30 @@
           "notNull": false,
           "autoincrement": false
         },
-        "price": {
-          "name": "price",
+        "first_price": {
+          "name": "first_price",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_price": {
+          "name": "last_price",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "first_seen": {
+          "name": "first_seen",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -91,13 +112,6 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         },
         "status": {

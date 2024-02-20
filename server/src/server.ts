@@ -17,7 +17,9 @@ const detail = await Facebook.parseIndex(latest.html)
 // console.log(detail[0])
 // console.log(get)
 
-console.log(detail)
+const ids = await Facebook.setDetail([detail[0]])
+
+console.log(ids)
 
 interface Handlers {
   [key: string]: {

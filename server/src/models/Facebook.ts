@@ -127,10 +127,15 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
 
 export default class Facebook {
   static setDetail(index: DetailExtractionSettled[]) {
+    const now = new Date()
+
     const items = index.map((item) => ({
       ...item,
       url: item.URL,
-      timestamp: new Date(),
+      first_price: item.price,
+      last_price: item.price,
+      first_seen: now,
+      last_seen: now,
       id: crypto.randomUUID(), // Add the id property
       status: 'pending' as const,
     }))
@@ -138,6 +143,10 @@ export default class Facebook {
     return db
       .insert(facebookIndex)
       .values(items)
+      .onConflictDoUpdate({
+        target: facebookIndex.fbID,
+        set: { last_seen: now },
+      })
       .then(() => items.map(({ id }) => ({ id }))) // Return the array of objects with 'id' property
   }
 

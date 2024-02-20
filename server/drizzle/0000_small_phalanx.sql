@@ -8,12 +8,14 @@ CREATE TABLE `dom:facebook` (
 CREATE TABLE `facebook:index` (
 	`url` text,
 	`fbID` text,
-	`price` text,
+	`first_price` text,
+	`last_price` text,
+	`first_seen` integer,
+	`last_seen` integer,
 	`title` text,
 	`location` text,
 	`miles` text,
 	`id` text PRIMARY KEY NOT NULL,
-	`timestamp` integer,
 	`status` text
 );
 --> statement-breakpoint

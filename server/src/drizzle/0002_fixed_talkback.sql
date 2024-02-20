@@ -1,1 +1,0 @@
-ALTER TABLE `facebook:index` DROP COLUMN `error`;
