@@ -197,6 +197,9 @@ export default class Facebook {
     const zipped = Bun.gzipSync(htmlString)
     const buffer = Buffer.from(zipped)
 
+    // Duplicate check
+    // Bun.hash.wyhash("data", 1234);
+
     // Write to DB
     await db.insert(domFacebook).values([
       {
