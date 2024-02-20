@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1708451036660,
+      "tag": "0000_empty_champions",
+      "breakpoints": true
+    }
+  ]
+}

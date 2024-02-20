@@ -4,16 +4,20 @@ const latest = await Facebook.getIndex()
 
 // await Bun.write(Bun.file('./example.html'), latest.html)
 
+// console.log(latest)
+
 const detail = await Facebook.parseIndex(latest.html)
 // await Bun.write(Bun.file('./example.json'), JSON.stringify(detail, null, 2))
 // console.log(detail)
 
 // const ids = await Facebook.setDetail(detail)
 
-const get = await Facebook.getDetail({ fbId: detail[0].fbID })
+// const get = await Facebook.getDetail({ fbId: detail[0].fbID })
 
-console.log(detail[0])
-console.log(get)
+// console.log(detail[0])
+// console.log(get)
+
+console.log(detail)
 
 interface Handlers {
   [key: string]: {
