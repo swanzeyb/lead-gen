@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { ActivePathName } from './config'
 
-const REFRESH_INTERVAL = 1 // 1 minutes
+const REFRESH_INTERVAL = 15 // minutes
 
 export const getStorageAsync = (key: string) => {
   return new Promise((resolve, reject) => {
@@ -20,19 +20,24 @@ export const setStorageAsync = (key: string, value: any) => {
 }
 
 export const refresh = () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  chrome.tabs.query({ active: true }, (tabs) => {
     const { id } = tabs[0]
     chrome.tabs.reload(id!)
   })
 }
 
-export async function shouldRefresh(alias: keyof typeof ActivePathName) {
+export async function nextRefresh(alias: keyof typeof ActivePathName) {
   const key = `last-refresh:${alias}`
   const { lastRefresh } = (await getStorageAsync(key)) as any
-  const now = dayjs()
-  const diff = now.diff(dayjs(lastRefresh), 'minute')
+  return REFRESH_INTERVAL - dayjs().diff(dayjs(lastRefresh), 'minute')
+}
 
-  if (diff > REFRESH_INTERVAL) {
+export async function shouldRefresh(alias: keyof typeof ActivePathName) {
+  const key = `last-refresh:${alias}`
+  const now = dayjs()
+  const diff = await nextRefresh(alias)
+
+  if (diff <= REFRESH_INTERVAL) {
     await setStorageAsync(key, now)
     return true
   } else {
