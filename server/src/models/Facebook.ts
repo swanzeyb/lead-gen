@@ -1,5 +1,5 @@
 import { db } from '../db'
-import { domFacebook } from '../schema'
+import { domFacebook, facebookIndex } from '../schema'
 import { eq, desc } from 'drizzle-orm'
 import { Observable, lastValueFrom } from 'rxjs'
 import { toArray } from 'rxjs/operators'
@@ -11,15 +11,6 @@ interface DetailExtraction {
   title?: string
   location?: string
   miles?: string
-}
-
-interface DetailExtractionSettled {
-  URL: string
-  fbID: string
-  price: string
-  title: string
-  location: string
-  miles: string
 }
 
 class IndexDetailSM {
@@ -89,6 +80,15 @@ class IndexDetailSM {
   }
 }
 
+interface DetailExtractionSettled {
+  URL: string
+  fbID: string
+  price: string
+  title: string
+  location: string
+  miles: string
+}
+
 function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   return new Observable((subscriber) => {
     const detailSM = new IndexDetailSM()
@@ -125,7 +125,33 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   })
 }
 
+interface GetDetailArguments extends DetailExtraction {
+  employeeId: number
+}
 export default class Facebook {
+  static setDetail(index: DetailExtractionSettled[]) {
+    const items = index.map((item) => ({
+      ...item,
+      timestamp: new Date(),
+      id: crypto.randomUUID(), // Add the id property
+      status: 'pending' as const,
+    }))
+
+    return db
+      .insert(facebookIndex)
+      .values(items)
+      .then(() => items.map(({ id }) => ({ id }))) // Return the array of objects with 'id' property
+  }
+
+  static getDetail({ limit = 1, fbId }: { limit?: number; fbId?: string }) {
+    return db
+      .select()
+      .from(facebookIndex)
+      .orderBy(desc(facebookIndex.timestamp))
+      .limit(limit)
+      .where(fbId ? eq(facebookIndex.fbID, fbId) : undefined)
+  }
+
   static parseIndex(htmlString: string) {
     const indexObserver = observeIndex(htmlString)
 

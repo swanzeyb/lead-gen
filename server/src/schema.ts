@@ -26,6 +26,5 @@ export const facebookIndex = sqliteTable('facebook:index', {
   miles: text('miles'),
   id: text('id').primaryKey(),
   timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
-  status: text('status', { enum: ['pending', 'complete'] }),
-  error: text('error'),
+  status: text('status', { enum: ['pending', 'complete', 'error'] }),
 })
