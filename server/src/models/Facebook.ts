@@ -129,6 +129,7 @@ export default class Facebook {
   static setDetail(index: DetailExtractionSettled[]) {
     const items = index.map((item) => ({
       ...item,
+      url: item.URL,
       timestamp: new Date(),
       id: crypto.randomUUID(), // Add the id property
       status: 'pending' as const,
@@ -144,7 +145,7 @@ export default class Facebook {
     return db
       .select()
       .from(facebookIndex)
-      .orderBy(desc(facebookIndex.timestamp))
+      .orderBy(desc(facebookIndex.last_seen))
       .limit(limit)
       .where(fbId ? eq(facebookIndex.fbID, fbId) : undefined)
   }

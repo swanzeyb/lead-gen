@@ -19,12 +19,13 @@ interface DetailExtractionSettled {
 */
 export const facebookIndex = sqliteTable('facebook:index', {
   url: text('url'),
-  fbID: text('fbID'),
+  fbID: text('fbID').unique(),
   price: text('price'),
   title: text('title'),
   location: text('location'),
   miles: text('miles'),
   id: text('id').primaryKey(),
-  timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
+  first_seen: integer('timestamp', { mode: 'timestamp_ms' }),
+  last_seen: integer('timestamp', { mode: 'timestamp_ms' }),
   status: text('status', { enum: ['pending', 'complete', 'error'] }),
 })
