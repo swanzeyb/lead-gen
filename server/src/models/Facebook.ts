@@ -150,6 +150,21 @@ export default class Facebook {
       .where(fbId ? eq(facebookIndex.fbID, fbId) : undefined)
   }
 
+  static updateDetail({
+    fbId,
+    status,
+    last_seen,
+  }: {
+    fbId: string
+    status: 'complete' | 'error'
+    last_seen: Date
+  }) {
+    return db
+      .update(facebookIndex)
+      .set({ status, last_seen })
+      .where(eq(facebookIndex.fbID, fbId))
+  }
+
   static parseIndex(htmlString: string) {
     const indexObserver = observeIndex(htmlString)
 
