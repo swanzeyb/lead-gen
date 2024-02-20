@@ -6,3 +6,26 @@ export const domFacebook = sqliteTable('dom:facebook', {
   timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
   html: blob('html', { mode: 'buffer' }),
 })
+
+/*
+interface DetailExtractionSettled {
+  URL: string
+  fbID: string
+  price: string
+  title: string
+  location: string
+  miles: string
+}
+*/
+export const facebookIndex = sqliteTable('facebook:index', {
+  url: text('url'),
+  fbID: text('fbID'),
+  price: text('price'),
+  title: text('title'),
+  location: text('location'),
+  miles: text('miles'),
+  id: text('id').primaryKey(),
+  timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
+  status: text('status', { enum: ['pending', 'complete'] }),
+  error: text('error'),
+})
