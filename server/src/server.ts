@@ -1,5 +1,9 @@
 import Facebook from './models/Facebook'
 
+const post = await Facebook.getPost()
+
+console.log(post)
+
 interface Handlers {
   [key: string]: {
     [key: string]: (request: Request) => Promise<Response>
@@ -7,7 +11,7 @@ interface Handlers {
 }
 
 const handlers: Handlers = {
-  '/dom/facebook': {
+  '/dom/facebook/index': {
     POST: async (request: Request) => {
       // Require body contents
       if (!request.body) throw new Error('No body contents')
@@ -22,6 +26,24 @@ const handlers: Handlers = {
 
       // Return with db id for dom content and ids for car ids
       return new Response(JSON.stringify({ domId, carIds }), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    },
+  },
+  '/dom/facebook/post': {
+    POST: async (request: Request) => {
+      // Require body contents
+      if (!request.body) throw new Error('No body contents')
+
+      // Add to index
+      const { htmlString } = (await request.json()) as { htmlString: string }
+      const domId = await Facebook.addPost(htmlString)
+      // const details = await Facebook.parseIndex(htmlString)
+
+      // Return with db id for dom content and ids for car ids
+      return new Response(JSON.stringify({ domId }), {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -189,7 +189,7 @@ export default class Facebook {
     return lastValueFrom(indexObserver.pipe(toArray()))
   }
 
-  static async addIndex(htmlString: string) {
+  private static async addHTML(htmlString: string, type: 'index' | 'post') {
     const id = crypto.randomUUID()
 
     // Prepare contents
@@ -204,7 +204,7 @@ export default class Facebook {
     await db.insert(domFacebook).values([
       {
         id,
-        type: 'index',
+        type,
         timestamp: new Date(),
         html: buffer,
       },
@@ -213,7 +213,7 @@ export default class Facebook {
     return id
   }
 
-  static async getIndex(id?: string) {
+  private static async getHTML(id?: string) {
     // Read from DB
     const [index] = await (id
       ? db.select().from(domFacebook).where(eq(domFacebook.id, id)).limit(1)
@@ -235,6 +235,22 @@ export default class Facebook {
     }
 
     return index
+  }
+
+  static async addIndex(htmlString: string) {
+    return Facebook.addHTML(htmlString, 'index')
+  }
+
+  static async getIndex(id?: string) {
+    return Facebook.getHTML(id)
+  }
+
+  static async addPost(htmlString: string) {
+    return Facebook.addHTML(htmlString, 'post')
+  }
+
+  static async getPost(id?: string) {
+    return Facebook.getHTML(id)
   }
 }
 
