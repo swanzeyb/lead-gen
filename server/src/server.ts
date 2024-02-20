@@ -10,14 +10,14 @@ const detail = await Facebook.parseIndex(latest.html)
 // await Bun.write(Bun.file('./example.json'), JSON.stringify(detail, null, 2))
 // console.log(detail)
 
-// const ids = await Facebook.setDetail(detail)
+const ids = await Facebook.setDetail(detail)
 
-// const get = await Facebook.getDetail({ fbId: detail[0].fbID })
+// const get = await Facebook.getDetail({ limit: 100 })
 
 // console.log(detail[0])
 // console.log(get)
 
-const ids = await Facebook.setDetail([detail[0]])
+// const ids = await Facebook.setDetail([detail[0]])
 
 console.log(ids)
 

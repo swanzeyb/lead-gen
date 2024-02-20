@@ -140,14 +140,20 @@ export default class Facebook {
       status: 'pending' as const,
     }))
 
-    return db
-      .insert(facebookIndex)
-      .values(items)
-      .onConflictDoUpdate({
-        target: facebookIndex.fbID,
-        set: { last_seen: now },
-      })
-      .then(() => items.map(({ id }) => ({ id }))) // Return the array of objects with 'id' property
+    return db.transaction((tx) => {
+      return Promise.all(
+        items.map((item) =>
+          tx
+            .insert(facebookIndex)
+            .values(item)
+            .onConflictDoUpdate({
+              target: facebookIndex.fbID,
+              set: { last_seen: now, last_price: item.price },
+            })
+            .returning({ id: facebookIndex.id })
+        )
+      )
+    })
   }
 
   static getDetail({ limit = 1, fbId }: { limit?: number; fbId?: string }) {
