@@ -1,25 +1,19 @@
 import { useEffect, useState } from 'react'
 import Table from './Table'
+import { Button } from '@mui/material'
 
 export default function App() {
-  const [message, setMessage] = useState('')
-  debugger
+  const [info, setInfo] = useState<any>()
 
   useEffect(() => {
-    const listener = (message: any) => {
-      console.log('Received message', message)
-      setMessage(message)
-    }
-
-    chrome.runtime.onMessage.addListener(listener)
-    return () => chrome.runtime.onMessage.removeListener(listener)
+    setInterval(() => {})
   }, [])
 
   return (
     <div>
-      <h1>App</h1>
-      <pre>{document.body.textContent}</pre>
-      <Table />
+      <pre>{JSON.stringify(info, null, 2)}</pre>
+      {/* <pre>{chrome.storage}</pre> */}
+      {/* <Button onClick={refresh}>Refresh Page</Button> */}
     </div>
   )
 }
