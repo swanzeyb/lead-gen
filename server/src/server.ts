@@ -8,6 +8,10 @@ const detail = await Facebook.parseIndex(latest.html)
 // await Bun.write(Bun.file('./example.json'), JSON.stringify(detail, null, 2))
 // console.log(detail)
 
+for (const deet of detail) {
+  console.log('DEET', deet)
+}
+
 interface Handlers {
   [key: string]: {
     [key: string]: (request: Request) => Promise<Response>

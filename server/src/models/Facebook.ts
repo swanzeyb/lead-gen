@@ -89,7 +89,7 @@ class IndexDetailSM {
   }
 }
 
-function observeIndex(htmlString: string) {
+function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   return new Observable((subscriber) => {
     const detailSM = new IndexDetailSM()
 
@@ -111,7 +111,7 @@ function observeIndex(htmlString: string) {
 
             // Check if we've received all details
             if (detailSM.isAccepted()) {
-              subscriber.next(detailSM.getData())
+              subscriber.next(detailSM.getData() as DetailExtractionSettled)
               detailSM.reset()
             }
           }
