@@ -1,6 +1,6 @@
 import { db } from '../db'
 import { domFacebook, facebookIndex } from '../schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, and, desc } from 'drizzle-orm'
 import { Observable, lastValueFrom } from 'rxjs'
 import { toArray } from 'rxjs/operators'
 
@@ -125,6 +125,56 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   })
 }
 
+class PostSM {
+  private currentState: 'Start'
+  private currentData: DetailExtraction
+
+  constructor() {
+    this.currentState = 'Start'
+    this.currentData = {}
+  }
+
+  input(str: string) {
+    switch (this.currentState) {
+      case 'Start':
+        break
+    }
+  }
+
+  isAccepted() {
+    return this.currentState === 'Start'
+  }
+
+  getState() {
+    return this.currentState
+  }
+
+  getData() {
+    return this.currentData
+  }
+
+  reset() {
+    this.currentState = 'Start'
+    this.currentData = {}
+  }
+}
+
+function observePost(htmlString: string) {
+  return new Observable((subscriber) => {
+    const indexRewriter = new HTMLRewriter()
+      .on('div[role="main"]', {
+        text: ({ text }) => {
+          subscriber.next(text)
+        },
+      })
+      .onDocument({
+        end: () => subscriber.complete(),
+      })
+
+    indexRewriter.transform(htmlString)
+  })
+}
+
 export default class Facebook {
   static setDetail(index: DetailExtractionSettled[]) {
     const now = new Date()
@@ -213,14 +263,19 @@ export default class Facebook {
     return id
   }
 
-  private static async getHTML(id?: string) {
+  private static async getHTML(type: 'index' | 'post', id?: string) {
     // Read from DB
     const [index] = await (id
-      ? db.select().from(domFacebook).where(eq(domFacebook.id, id)).limit(1)
+      ? db
+          .select()
+          .from(domFacebook)
+          .where(and(eq(domFacebook.id, id), eq(domFacebook.type, type)))
+          .limit(1)
       : db
           .select()
           .from(domFacebook)
           .orderBy(desc(domFacebook.timestamp))
+          .where(eq(domFacebook.type, type))
           .limit(1))
 
     // Unpack contents
@@ -242,7 +297,7 @@ export default class Facebook {
   }
 
   static async getIndex(id?: string) {
-    return Facebook.getHTML(id)
+    return Facebook.getHTML('index', id)
   }
 
   static async addPost(htmlString: string) {
@@ -250,7 +305,7 @@ export default class Facebook {
   }
 
   static async getPost(id?: string) {
-    return Facebook.getHTML(id)
+    return Facebook.getHTML('post', id)
   }
 }
 

@@ -2,7 +2,13 @@ import Facebook from './models/Facebook'
 
 const post = await Facebook.getPost()
 
-console.log(post)
+const indexRewriter = new HTMLRewriter().on('div[role="main"]', {
+  text: ({ text }) => {
+    console.log(text)
+  },
+})
+
+indexRewriter.transform(post.html)
 
 interface Handlers {
   [key: string]: {
