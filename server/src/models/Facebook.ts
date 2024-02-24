@@ -125,9 +125,9 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   })
 }
 
-class PostSM {
-  private currentState: 'Start'
-  private currentData: DetailExtraction
+export class PostSM {
+  private currentState: string
+  private currentData: any
 
   constructor() {
     this.currentState = 'Start'
@@ -137,12 +137,97 @@ class PostSM {
   input(str: string) {
     switch (this.currentState) {
       case 'Start':
+        if (/^\d{4} \w+ \w+.*/.test(str)) {
+          this.currentState = 'Title'
+          this.currentData.title = str
+        }
+        break
+      case 'Title':
+        if (str.includes('$')) {
+          this.currentState = 'Price'
+          this.currentData.price = str
+        }
+        break
+      case 'Price':
+        if (/^[^,]+, [A-Z]{2}$/.test(str)) {
+          this.currentState = 'Location'
+          this.currentData.location = str
+        }
+        break
+      case 'Location':
+        if (str.includes('mile')) {
+          this.currentState = 'Miles'
+          this.currentData.miles = str
+        }
+        break
+      case 'Miles':
+        if (str.includes('transmission')) {
+          this.currentState = 'Transmission'
+          this.currentData.transmission = str
+        }
+        break
+      case 'Transmission':
+        if (str.includes('Exterior')) {
+          this.currentState = 'Exterior Color'
+          this.currentData.exteriorColor = str
+        }
+        break
+      case 'Exterior Color':
+        if (str.includes('Interior')) {
+          this.currentState = 'Interior Color'
+          this.currentData.interiorColor = str
+        }
+        break
+      case 'Interior Color':
+        if (str.includes('Fuel')) {
+          this.currentState = 'Fuel'
+        }
+        break
+      case 'Fuel':
+        this.currentState = 'Title Brand'
+        this.currentData.fuel = str
+        break
+      case 'Title Brand':
+        if (str.includes('title')) {
+          this.currentState = 'Description Next'
+          this.currentData.titleBrand = str
+        }
+        break
+      case 'Description Next':
+        if (str.includes('Description')) {
+          this.currentState = 'Description'
+        }
+        break
+      case 'Description':
+        this.currentState = 'Seller Name Next'
+        this.currentData.description = str
+        break
+      case 'Seller Name Next':
+        if (str.includes('Seller details')) {
+          this.currentState = 'Seller Name'
+        }
+        break
+      case 'Seller Name':
+        this.currentState = 'Seller Joined'
+        this.currentData.sellerName = str
+        break
+      case 'Seller Joined':
+        if (/^\d{4}$/.test(str)) {
+          this.currentState = 'Is Sponsored'
+          this.currentData.sellerJoined = str
+        }
+        break
+      case 'Is Sponsored':
+        this.currentData.isSponsored ??= false
+        if (str.includes('Sponsored')) {
+          this.currentData.isSponsored = true
+        }
         break
     }
   }
 
   isAccepted() {
-    return this.currentState === 'Start'
+    return this.currentState === 'Is Sponsored'
   }
 
   getState() {

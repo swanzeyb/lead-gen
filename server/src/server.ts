@@ -1,12 +1,24 @@
-import Facebook from './models/Facebook'
+import Facebook, { PostSM } from './models/Facebook'
 
 const post = await Facebook.getPost()
 
-const indexRewriter = new HTMLRewriter().on('div[role="main"]', {
-  text: ({ text }) => {
-    console.log(text)
-  },
-})
+const sm = new PostSM()
+const indexRewriter = new HTMLRewriter()
+  .on('div[role="main"]', {
+    text: ({ text }) => {
+      if (text) {
+        sm.input(text)
+        console.log(text)
+      }
+    },
+  })
+  .onDocument({
+    end: () => {
+      console.log('Is Accepted', sm.isAccepted())
+      console.log('Current State', sm.getState())
+      console.log('Current Data', sm.getData())
+    },
+  })
 
 indexRewriter.transform(post.html)
 
