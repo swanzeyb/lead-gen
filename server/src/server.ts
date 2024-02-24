@@ -23,9 +23,11 @@ const post = await Facebook.getPost()
 
 // indexRewriter.transform(post.html)
 
-FBProductParser.extractDetails(post.html)
-  .then((d) => console.log(d))
-  .catch((e) => console.error(e))
+const details = await FBProductParser.extractDetails(post.html)
+const title = await FBProductParser.parseDetails(details)
+
+console.log(details)
+console.log(title)
 
 interface Handlers {
   [key: string]: {

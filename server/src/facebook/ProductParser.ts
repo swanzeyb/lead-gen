@@ -1,3 +1,5 @@
+import FBTitleParser from './TitleParser'
+
 interface DetailedCarListingUnsettled {
   title?: string
   price?: string
@@ -198,5 +200,9 @@ export default class FBProductParser {
 
       indexRewriter.transform(html)
     })
+  }
+
+  static async parseDetails(details: DetailedCarListing) {
+    return FBTitleParser.parseTitle(details.title)
   }
 }
