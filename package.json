@@ -3,6 +3,12 @@
   "private": "true",
   "module": "index.ts",
   "type": "module",
+  "packageManager": "bun@1.0.28",
+  "trustedDependencies": [
+    "drizzle-orm",
+    "rxjs",
+    "drizzle-kit"
+  ],
   "workspaces": [
     "ext",
     "server"
@@ -10,10 +16,6 @@
   "scripts": {
     "clean": "rm -rf node_modules ext/node_modules bun.lockb ext/bun.lockb"
   },
-  "dependencies": {
-    "drizzle-orm": "^0.29.3"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.20.14"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
