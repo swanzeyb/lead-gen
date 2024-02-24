@@ -1,5 +1,7 @@
 import Facebook, { PostSM } from './models/Facebook'
 import FBProductParser from './facebook/ProductParser'
+import FBCatalogParser from './facebook/CatalogParser'
+import FBTitleParser from './facebook/TitleParser'
 
 const post = await Facebook.getPost()
 
@@ -23,11 +25,18 @@ const post = await Facebook.getPost()
 
 // indexRewriter.transform(post.html)
 
-const details = await FBProductParser.extractDetails(post.html)
-const title = await FBProductParser.parseDetails(details)
+const listings = await FBCatalogParser.extractDetails(post.html)
 
-console.log(details)
-console.log(title)
+for (const listing of listings) {
+  const title = await FBTitleParser.parseTitle(listing.title)
+  console.log(listing.title, title)
+}
+
+// const details = await FBProductParser.extractDetails(post.html)
+// const title = await FBProductParser.parseDetails(details)
+
+// console.log(details)
+// console.log(title)
 
 interface Handlers {
   [key: string]: {

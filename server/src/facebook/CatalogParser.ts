@@ -84,10 +84,10 @@ class CatalogDetailSM {
 }
 
 export default class FBCatalogParser {
-  static extractDetails(html: string) {
+  static extractDetails(html: string): Promise<BasicCarListing[]> {
     return new Promise((resolve) => {
       const detailSM = new CatalogDetailSM()
-      const findings: BasicCarListingUnsettled[] = []
+      const findings: BasicCarListing[] = []
 
       const indexRewriter = new HTMLRewriter()
         .on('a[href*="/marketplace/item/"]', {
@@ -109,7 +109,7 @@ export default class FBCatalogParser {
 
               // Check if we've received all details
               if (detailSM.isAccepted()) {
-                findings.push(detailSM.getData())
+                findings.push(detailSM.getData() as unknown as BasicCarListing)
                 detailSM.reset()
               }
             }

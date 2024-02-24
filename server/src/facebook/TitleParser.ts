@@ -32,7 +32,7 @@ interface TitleData {
 
 export class TitleSM {
   private currentState: 'Start' | 'Year' | 'Make Continued' | 'Model' | 'Doors'
-  private currentData: any
+  private currentData: TitleDataUnsettled
 
   constructor() {
     this.currentState = 'Start'
@@ -46,7 +46,6 @@ export class TitleSM {
         this.currentData.year = parseInt(str)
         break
       case 'Year':
-        console.log('yee yee', str)
         if (makeEdgeCaseList.some((make) => make.includes(str))) {
           // It's a two-word make
           this.currentState = 'Make Continued'
