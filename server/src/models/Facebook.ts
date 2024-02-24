@@ -125,8 +125,40 @@ function observeIndex(htmlString: string): Observable<DetailExtractionSettled> {
   })
 }
 
+interface PostExtraction {
+  title?: string
+  price?: string
+  location?: string
+  miles?: string
+  transmission?: string
+  exteriorColor?: string
+  interiorColor?: string
+  fuel?: string
+  titleBrand?: string
+  description?: string
+  sellerName?: string
+  sellerJoined?: string
+  isSponsored?: boolean
+}
+
 export class PostSM {
-  private currentState: string
+  private currentState:
+    | 'Start'
+    | 'Title'
+    | 'Price'
+    | 'Location'
+    | 'Miles'
+    | 'Transmission'
+    | 'Exterior Color'
+    | 'Interior Color'
+    | 'Fuel'
+    | 'Title Brand'
+    | 'Description Next'
+    | 'Description'
+    | 'Seller Name Next'
+    | 'Seller Name'
+    | 'Seller Joined'
+    | 'Is Sponsored'
   private currentData: any
 
   constructor() {
