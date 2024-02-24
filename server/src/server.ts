@@ -1,26 +1,31 @@
 import Facebook, { PostSM } from './models/Facebook'
+import FBProductParser from './facebook/ProductParser'
 
 const post = await Facebook.getPost()
 
-const sm = new PostSM()
-const indexRewriter = new HTMLRewriter()
-  .on('div[role="main"]', {
-    text: ({ text }) => {
-      if (text) {
-        sm.input(text)
-        console.log(text)
-      }
-    },
-  })
-  .onDocument({
-    end: () => {
-      console.log('Is Accepted', sm.isAccepted())
-      console.log('Current State', sm.getState())
-      console.log('Current Data', sm.getData())
-    },
-  })
+// const sm = new PostSM()
+// const indexRewriter = new HTMLRewriter()
+//   .on('div[role="main"]', {
+//     text: ({ text }) => {
+//       if (text) {
+//         sm.input(text)
+//         console.log(text)
+//       }
+//     },
+//   })
+//   .onDocument({
+//     end: () => {
+//       console.log('Is Accepted', sm.isAccepted())
+//       console.log('Current State', sm.getState())
+//       console.log('Current Data', sm.getData())
+//     },
+//   })
 
-indexRewriter.transform(post.html)
+// indexRewriter.transform(post.html)
+
+FBProductParser.extractDetails(post.html)
+  .then((d) => console.log(d))
+  .catch((e) => console.error(e))
 
 interface Handlers {
   [key: string]: {
