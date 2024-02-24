@@ -7,17 +7,7 @@ export const domFacebook = sqliteTable('dom:facebook', {
   html: blob('html', { mode: 'buffer' }),
 })
 
-/*
-interface DetailExtractionSettled {
-  URL: string
-  fbID: string
-  price: string
-  title: string
-  location: string
-  miles: string
-}
-*/
-export const facebookIndex = sqliteTable('facebook:index', {
+export const facebookCatalog = sqliteTable('facebook:catalog', {
   url: text('url'),
   fbID: text('fbID').unique(),
   first_price: text('first_price'),
@@ -29,4 +19,30 @@ export const facebookIndex = sqliteTable('facebook:index', {
   miles: text('miles'),
   id: text('id').primaryKey(),
   status: text('status', { enum: ['pending', 'complete', 'error'] }),
+})
+
+export const facebookProduct = sqliteTable('facebook:product', {
+  url: text('url'),
+  fbID: text('fbID').unique(),
+  title: text('title'),
+  year: integer('year'),
+  make: text('make'),
+  model: text('model'),
+  doors: integer('doors'),
+  class: text('class'),
+  price: integer('price'),
+  location: text('location'),
+  miles: integer('miles'),
+  transmission: text('transmission', {
+    enum: ['Automatic', 'Manual', 'Other'],
+  }),
+  exteriorColor: text('exteriorColor'),
+  interiorColor: text('interiorColor'),
+  fuel: text('fuel'),
+  isCleanTitle: integer('isCleanTitle', { mode: 'boolean' }),
+  description: text('description'),
+  sellerName: text('sellerName'),
+  sellerJoined: integer('sellerJoined', { mode: 'timestamp_ms' }),
+  isSponsored: integer('isSponsored', { mode: 'boolean' }),
+  id: text('id').primaryKey(),
 })
