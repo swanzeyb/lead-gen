@@ -36,7 +36,7 @@ interface Handlers {
 }
 
 const handlers: Handlers = {
-  '/dom/facebook/index': {
+  '/dom/facebook/catalog': {
     POST: async (request: Request) => {
       // Require body contents
       if (!request.body) throw new Error('No body contents')
@@ -57,7 +57,7 @@ const handlers: Handlers = {
       })
     },
   },
-  '/dom/facebook/post': {
+  '/dom/facebook/product': {
     POST: async (request: Request) => {
       // Require body contents
       if (!request.body) throw new Error('No body contents')
