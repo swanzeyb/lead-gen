@@ -25,17 +25,17 @@ const post = await Facebook.getPost()
 
 // indexRewriter.transform(post.html)
 
-const listings = await FBCatalogParser.extractDetails(post.html)
+// const listings = await FBCatalogParser.extractDetails(post.html)
 
-for (const listing of listings) {
-  const title = await FBTitleParser.parseTitle(listing.title)
-  console.log(listing.title, title)
-}
+// for (const listing of listings) {
+//   console.log(listing)
+// }
 
-// const details = await FBProductParser.extractDetails(post.html)
+const details = await FBProductParser.extractDetails(post.html)
+const parsed = await FBProductParser.parseDetails(details)
 // const title = await FBProductParser.parseDetails(details)
 
-// console.log(details)
+console.log(parsed)
 // console.log(title)
 
 interface Handlers {

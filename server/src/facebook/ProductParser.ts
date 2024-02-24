@@ -16,7 +16,7 @@ interface DetailedCarListingUnsettled {
   isSponsored?: boolean
 }
 
-interface DetailedCarListing {
+interface DetailedCarListingUnparsed {
   title: string
   price: string
   location: string
@@ -167,8 +167,25 @@ export class ProductDetailSM {
   }
 }
 
+import type { TitleData } from './TitleParser'
+interface DetailedCarListing extends TitleData {
+  title: string
+  price: number
+  location: string
+  miles: number
+  transmission: 'Automatic' | 'Manual' | 'Other'
+  exteriorColor: string
+  interiorColor: string
+  fuel: string
+  isCleanTitle: boolean
+  description: string
+  sellerName: string
+  sellerJoined: number
+  isSponsored: boolean
+}
+
 export default class FBProductParser {
-  static extractDetails(html: string): Promise<DetailedCarListing> {
+  static extractDetails(html: string): Promise<DetailedCarListingUnparsed> {
     return new Promise((resolve, reject) => {
       const sm = new ProductDetailSM()
 
@@ -183,7 +200,7 @@ export default class FBProductParser {
         .onDocument({
           end: () => {
             if (sm.isAccepted()) {
-              resolve(sm.getData() as DetailedCarListing)
+              resolve(sm.getData() as DetailedCarListingUnparsed)
             } else {
               reject(
                 new Error('Failed to parse product details', {
@@ -202,7 +219,24 @@ export default class FBProductParser {
     })
   }
 
-  static async parseDetails(details: DetailedCarListing) {
-    return FBTitleParser.parseTitle(details.title)
+  static async parseDetails(
+    details: DetailedCarListingUnparsed
+  ): Promise<DetailedCarListing> {
+    const title = await FBTitleParser.parseTitle(details.title)
+    return {
+      ...title,
+      ...details,
+      price: parseInt(details.price.replace(/\D/g, '')),
+      miles: parseInt(details.miles.replace(/\D/g, '')),
+      transmission: details.transmission.includes('Automatic')
+        ? 'Automatic'
+        : details.transmission.includes('Manual')
+        ? 'Manual'
+        : 'Other',
+      isCleanTitle: details.titleBrand.includes('Clean'),
+      sellerJoined: parseInt(details.sellerJoined),
+      exteriorColor: details.exteriorColor.split(' ').at(-1)!,
+      interiorColor: details.interiorColor.split(' ').at(-1)!,
+    }
   }
 }

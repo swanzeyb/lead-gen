@@ -22,7 +22,7 @@ interface TitleDataUnsettled {
   class?: string
 }
 
-interface TitleData {
+export interface TitleData {
   year: number
   make: string
   model: string
