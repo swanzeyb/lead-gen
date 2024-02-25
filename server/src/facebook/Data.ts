@@ -4,49 +4,6 @@ import { db } from '../db'
 import { domFacebook, facebookCatalog, facebookProduct } from '../schema'
 import { eq, and, desc } from 'drizzle-orm'
 
-/*
-  static setDetail(index: DetailExtractionSettled[]) {
-    const now = new Date()
-
-    const items = index.map((item) => ({
-      ...item,
-      url: item.URL,
-      first_price: item.price,
-      last_price: item.price,
-      first_seen: now,
-      last_seen: now,
-      id: crypto.randomUUID(), // Add the id property
-      status: 'pending' as const,
-    }))
-
-    return db
-      .transaction((tx) => {
-        return Promise.all(
-          items.map((item) =>
-            tx
-              .insert(facebookIndex)
-              .values(item)
-              .onConflictDoUpdate({
-                target: facebookIndex.fbID,
-                set: { last_seen: now, last_price: item.price },
-              })
-              .returning({ id: facebookIndex.id })
-          )
-        )
-      })
-      .then((resultIds) => resultIds.flat())
-  }
-
-  static getDetail({ limit = 1, fbId }: { limit?: number; fbId?: string }) {
-    return db
-      .select()
-      .from(facebookIndex)
-      .orderBy(desc(facebookIndex.last_seen))
-      .limit(limit)
-      .where(fbId ? eq(facebookIndex.fbID, fbId) : undefined)
-  }
-*/
-
 type DBInsertCatalog = typeof facebookCatalog.$inferInsert
 type FBInsertCatalog = Omit<DBInsertCatalog, 'id'> & BasicCarListing
 
