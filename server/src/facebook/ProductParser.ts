@@ -56,7 +56,7 @@ export class ProductDetailSM {
   }
 
   input(str: string) {
-    console.log(this.currentState, '|', str)
+    // console.log(this.currentState, '|', str)
     switch (this.currentState) {
       case 'Start':
         if (/^\d{4} \w+ \w+.*/.test(str)) {

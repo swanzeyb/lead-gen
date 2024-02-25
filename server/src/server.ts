@@ -1,21 +1,8 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
-const toExport = ['41706288-bc46-4558-b760-e4f5ac3a16eb'] // 0396e0f5-8546-48f5-beb4-507ebcdce666, c4115066-ea7f-4875-ab24-9d9f56ba5b47, 96148c12-fa34-4544-9170-178df32346fb
+import { runTests } from './facebook/ProductParser.test'
 
-for (const id of toExport) {
-  FBData.getProductHTML({ id }).then(async (data) => {
-    const extraction = await FBProductParser.extractDetails(data.html)
-    console.log(extraction)
-    const parsed = await FBProductParser.parseDetails(extraction)
-
-    Bun.write(
-      `./tests/product-parser-test-${id}.json`,
-      JSON.stringify({ parsed, html: data.html }, null, 2)
-    )
-
-    console.log(parsed)
-  })
-}
+await runTests()
 
 // const data = await FBData.getProductHTML({
 //   id: 'cf306959-4857-4552-aead-6b17f4996e96',
