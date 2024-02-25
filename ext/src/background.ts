@@ -1,94 +1,91 @@
-import { ActivePathName } from './config'
-import { shouldRefresh, nextRefresh } from './refresh'
-import dayjs from 'dayjs'
+const SERVER_URL = `http://localhost:3001`
 
-class FacebookIndex {
-  static async sendHTML(tabId: number) {
-    // Get HTML off page
-    const [{ result }] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: function () {
-        return document.documentElement.outerHTML
-      },
-    })
+const toRefresh = new Set<number>() // Set of tab IDs to refresh
 
-    // Send HTML to server
+// Refresh Catalog page
+setInterval(async function () {
+  for (const tabId of toRefresh) {
     try {
-      await fetch('http://localhost:3001/dom/facebook/catalog', {
-        method: 'POST',
-        body: JSON.stringify({ htmlString: result }),
-      })
-        .then((r) => r.json())
-        .then((jsonResponse) => {
-          console.log(jsonResponse)
-        })
-    } catch (error) {
-      console.log('Error sending HTML to server', error)
+      chrome.tabs.reload(tabId)
+    } catch (e) {
+      toRefresh.delete(tabId)
     }
   }
-}
+}, 1000 * 60 * 1) // 1 minute
 
-class FacebookPost {
-  static async sendHTML(tabId: number) {
-    // Get HTML off page
-    const [{ result }] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: function () {
-        return document.documentElement.outerHTML
-      },
-    })
+const toFetchProduct = new Set<number>()
 
-    // Send HTML to server
+// Fetch product details
+setInterval(async function () {
+  for (const tabId of toFetchProduct) {
     try {
-      await fetch('http://localhost:3001/dom/facebook/product', {
-        method: 'POST',
-        body: JSON.stringify({ htmlString: result }),
-      })
-        .then((r) => r.json())
-        .then((jsonResponse) => {
-          console.log(jsonResponse)
+      const [{ url, fbID }] = await fetch(
+        `${SERVER_URL}/worker/facebook/product/todo`
+      ).then((r) => r.json())
+
+      const tab = await chrome.tabs.update(tabId, { url })
+      console.log(tab)
+
+      // Wait for page to load for this tabId
+      await new Promise<void>((resolve) => {
+        chrome.tabs.onUpdated.addListener(async function (
+          thisTabId,
+          changeInfo,
+          tab
+        ) {
+          if (
+            tabId === thisTabId &&
+            changeInfo.status === 'complete' &&
+            tab.url
+          ) {
+            if (new URL(tab.url).pathname === new URL(url).pathname) {
+              resolve()
+            }
+          }
         })
-    } catch (error) {
-      console.log('Error sending HTML to server', { cause: error })
+      })
+
+      // Get HTML off page
+      const [{ result }] = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: function () {
+          return document.documentElement.outerHTML
+        },
+      })
+
+      // Send HTML to server
+      try {
+        await fetch(`${SERVER_URL}/dom/facebook/catalog`, {
+          method: 'POST',
+          body: JSON.stringify({ htmlString: result, fbID }),
+        })
+          .then((r) => r.json())
+          .then((jsonResponse) => {
+            console.log(jsonResponse)
+          })
+      } catch (error) {
+        console.log('Error sending HTML to server', error)
+      }
+    } catch (e) {
+      console.log('Error getting product details', e)
     }
   }
-}
+}, 1000 * 60 * 0.5 + Math.random() * 1000 * 60) // 30 seconds + random 0-1 minute
 
-// var timer: { [alias: string]: Timer | undefined } = {}
+const toFetchMMR = new Set<number>()
 
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
   console.log(changeInfo.status, tab.url)
 
-  // Move to next step if page is ready and has a URL
-  if (changeInfo.status !== 'complete' || !tab.url) return
+  if (changeInfo.status === 'complete' && tab.url) {
+    const url = new URL(tab.url)
 
-  switch (new URL(tab.url).pathname) {
-    case ActivePathName['facebook:index']:
-      {
-        const alias = 'facebook:index'
-        FacebookIndex.sendHTML(tabId)
-
-        const timer = setInterval(async () => {
-          const should = await shouldRefresh(alias)
-          const next = await nextRefresh(alias)
-          console.log(`Next refresh in ${next} minutes.`)
-          if (!should) return
-
-          try {
-            await chrome.tabs.reload(tabId)
-            console.log(
-              `Refreshed ${alias}: ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
-            )
-          } catch (error) {
-            clearInterval(timer)
-          }
-        }, 1000 * 60 * 0.5)
-      }
-      break
-    default:
-      if (tab.url.includes('/marketplace/item/')) {
-        FacebookPost.sendHTML(tabId)
-      }
-      break
+    if (url.pathname === '/marketplace/category/vehicles') {
+      toRefresh.add(tabId)
+    } else if (url.pathname.includes('/marketplace/item/')) {
+      toFetchProduct.add(tabId)
+    } else if ((url.pathname = '/ui-mmr/')) {
+      toFetchMMR.add(tabId)
+    }
   }
 })
