@@ -42,7 +42,6 @@ export const facebookProduct = sqliteTable('facebook:product', {
   description: text('description'),
   sellerName: text('sellerName'),
   sellerJoined: integer('sellerJoined'),
-  isSponsored: integer('isSponsored', { mode: 'boolean' }),
   id: text('id').primaryKey(),
   updated_at: integer('updated_at', { mode: 'timestamp_ms' }),
 })

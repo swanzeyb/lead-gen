@@ -37,7 +37,7 @@ export async function shouldRefresh(alias: keyof typeof ActivePathName) {
   const now = dayjs()
   const diff = await nextRefresh(alias)
 
-  if (diff <= REFRESH_INTERVAL) {
+  if (diff <= 0) {
     await setStorageAsync(key, now)
     return true
   } else {

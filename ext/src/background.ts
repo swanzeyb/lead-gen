@@ -14,7 +14,7 @@ class FacebookIndex {
 
     // Send HTML to server
     try {
-      await fetch('http://localhost:3001/dom/facebook/index', {
+      await fetch('http://localhost:3001/dom/facebook/catalog', {
         method: 'POST',
         body: JSON.stringify({ htmlString: result }),
       })
@@ -40,7 +40,7 @@ class FacebookPost {
 
     // Send HTML to server
     try {
-      await fetch('http://localhost:3001/dom/facebook/post', {
+      await fetch('http://localhost:3001/dom/facebook/product', {
         method: 'POST',
         body: JSON.stringify({ htmlString: result }),
       })
@@ -49,7 +49,7 @@ class FacebookPost {
           console.log(jsonResponse)
         })
     } catch (error) {
-      console.log('Error sending HTML to server', error)
+      console.log('Error sending HTML to server', { cause: error })
     }
   }
 }
