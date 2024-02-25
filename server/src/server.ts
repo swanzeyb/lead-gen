@@ -1,7 +1,11 @@
-import FBData from './facebook/Data'
+import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
 const catalog = await FBData.getCatalogHTML()
-console.log(catalog)
+const extraction = await FBCatalogParser.extractDetails(catalog.html)
+const listings = await FBCatalogParser.parseDetails(extraction)
+
+const ids = await FBData.setCatalog(listings)
+console.log(ids)
 
 // interface Handlers {
 //   [key: string]: {

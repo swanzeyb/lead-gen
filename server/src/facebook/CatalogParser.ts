@@ -6,7 +6,6 @@ export interface BasicCarListing {
   location: string
   miles: number
 }
-
 interface BasicCarListingUnsettled {
   URL?: string
   fbID?: string
@@ -14,6 +13,15 @@ interface BasicCarListingUnsettled {
   title?: string
   location?: string
   miles?: string
+}
+
+interface BasicCarListingUnparsed {
+  URL: string
+  fbID: string
+  price: string
+  title: string
+  location: string
+  miles: string
 }
 
 class CatalogDetailSM {
@@ -84,10 +92,10 @@ class CatalogDetailSM {
 }
 
 export default class FBCatalogParser {
-  static extractDetails(html: string): Promise<BasicCarListing[]> {
+  static extractDetails(html: string): Promise<BasicCarListingUnparsed[]> {
     return new Promise((resolve) => {
       const detailSM = new CatalogDetailSM()
-      const findings: BasicCarListing[] = []
+      const findings: BasicCarListingUnparsed[] = []
 
       const indexRewriter = new HTMLRewriter()
         .on('a[href*="/marketplace/item/"]', {
@@ -109,7 +117,7 @@ export default class FBCatalogParser {
 
               // Check if we've received all details
               if (detailSM.isAccepted()) {
-                findings.push(detailSM.getData() as unknown as BasicCarListing)
+                findings.push(detailSM.getData() as BasicCarListingUnparsed)
                 detailSM.reset()
               }
             }
@@ -123,5 +131,18 @@ export default class FBCatalogParser {
     })
   }
 
-  // static parseDetails(): BasicCarListing[] {}
+  static async parseDetails(
+    listings: BasicCarListingUnparsed[]
+  ): Promise<BasicCarListing[]> {
+    return listings.map((listing) => {
+      return {
+        URL: listing.URL,
+        fbID: listing.fbID,
+        price: parseInt(listing.price.replace(/\D/g, '')),
+        title: listing.title,
+        location: listing.location,
+        miles: parseInt(listing.miles.replace(/\D/g, '')),
+      }
+    })
+  }
 }

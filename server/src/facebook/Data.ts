@@ -47,12 +47,11 @@ import { eq, and, desc } from 'drizzle-orm'
   }
 */
 
-type FBInsertCatalog = typeof facebookCatalog.$inferInsert
-interface FBInsertCatalogAddl extends FBInsertCatalog {
-  price: number
-}
+type DBInsertCatalog = typeof facebookCatalog.$inferInsert
+type FBInsertCatalog = Omit<DBInsertCatalog, 'id'> & BasicCarListing
 
-type FBInsertProduct = typeof facebookProduct.$inferInsert
+type DBInsertProduct = typeof facebookProduct.$inferInsert
+type FBInsertProduct = Omit<DBInsertProduct, 'id'> & DetailedCarListing
 
 export default class FBData {
   private static async addHTML(htmlString: string, type: 'index' | 'post') {
@@ -128,11 +127,11 @@ export default class FBData {
       .where(id ? eq(facebookProduct.id, id) : undefined)
   }
 
-  static async setProduct(products: DetailedCarListing | DetailedCarListing[]) {
+  static async setProduct(products: FBInsertProduct | FBInsertProduct[]) {
     const index = Array.of(products).flat()
     const now = new Date()
 
-    const items: FBInsertProduct[] = index.map((item) => ({
+    const items: (FBInsertProduct & { id: string })[] = index.map((item) => ({
       ...item,
       id: crypto.randomUUID(), // Add the id property
       updated_at: now,
@@ -147,7 +146,7 @@ export default class FBData {
               .values(item)
               .onConflictDoUpdate({
                 target: facebookProduct.fbID,
-                set: { updated_at: now },
+                set: { updated_at: now }, // YOU LEFT OFF HERE ASSHOLE
               })
               .returning({ id: facebookProduct.id })
           )
@@ -182,11 +181,11 @@ export default class FBData {
       .where(id ? eq(facebookCatalog.id, id) : undefined)
   }
 
-  static async setCatalog(listings: BasicCarListing | BasicCarListing[]) {
+  static async setCatalog(listings: FBInsertCatalog | FBInsertCatalog[]) {
     const index = Array.of(listings).flat()
     const now = new Date()
 
-    const items: FBInsertCatalogAddl[] = index.map((item) => ({
+    const items: FBInsertCatalog[] = index.map((item) => ({
       ...item,
       url: item.URL,
       first_price: item.price,
