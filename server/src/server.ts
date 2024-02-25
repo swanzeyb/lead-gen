@@ -1,9 +1,5 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
-import { runTests } from './facebook/ProductParser.test'
-
-await runTests()
-
 // const data = await FBData.getProductHTML({
 //   id: 'cf306959-4857-4552-aead-6b17f4996e96',
 // })
