@@ -1,19 +1,25 @@
+CREATE TABLE `dom:facebook` (
+	`id` text PRIMARY KEY NOT NULL,
+	`type` text,
+	`timestamp` integer,
+	`html` blob
+);
+--> statement-breakpoint
 CREATE TABLE `facebook:catalog` (
 	`url` text,
 	`fbID` text,
-	`first_price` text,
-	`last_price` text,
+	`first_price` integer,
+	`last_price` integer,
 	`first_seen` integer,
 	`last_seen` integer,
 	`title` text,
 	`location` text,
-	`miles` text,
+	`miles` integer,
 	`id` text PRIMARY KEY NOT NULL,
 	`status` text
 );
 --> statement-breakpoint
 CREATE TABLE `facebook:product` (
-	`url` text,
 	`fbID` text,
 	`title` text,
 	`year` integer,
@@ -33,9 +39,9 @@ CREATE TABLE `facebook:product` (
 	`sellerName` text,
 	`sellerJoined` integer,
 	`isSponsored` integer,
-	`id` text PRIMARY KEY NOT NULL
+	`id` text PRIMARY KEY NOT NULL,
+	`updated_at` integer
 );
 --> statement-breakpoint
-DROP TABLE `facebook:index`;--> statement-breakpoint
 CREATE UNIQUE INDEX `facebook:catalog_fbID_unique` ON `facebook:catalog` (`fbID`);--> statement-breakpoint
 CREATE UNIQUE INDEX `facebook:product_fbID_unique` ON `facebook:product` (`fbID`);
