@@ -276,6 +276,9 @@ export default class FBProductParser {
     if (parsed.interiorColor.includes('color')) {
       parsed.interiorColor = 'other'
     }
+    if (parsed.fuel?.includes('flex')) {
+      parsed.fuel = 'gasoline'
+    }
 
     // To title case
     for (const [key, value] of Object.entries(parsed)) {
