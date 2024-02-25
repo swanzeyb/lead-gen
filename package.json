@@ -16,6 +16,6 @@
   "scripts": {
     "clean": "rm -rf node_modules ext/node_modules bun.lockb ext/bun.lockb"
   },
-  "dependencies": {},
+  "dependencies": { "title-case": "^4.3.1" },
   "devDependencies": {}
 }

@@ -1,4 +1,5 @@
 import FBTitleParser from './TitleParser'
+import { titleCase } from 'title-case'
 
 interface DetailedCarListingUnsettled {
   title?: string
@@ -216,9 +217,10 @@ export default class FBProductParser {
     details: DetailedCarListingUnparsed
   ): Promise<DetailedCarListing> {
     const title = await FBTitleParser.parseTitle(details.title)
-    return {
+    const parsed: DetailedCarListing = {
       ...title,
       ...details,
+      description: details.description.trim(),
       price: parseInt(details.price.replace(/\D/g, '')),
       miles: parseInt(details.miles.replace(/\D/g, '')),
       transmission: details.transmission.includes('automatic')
@@ -237,5 +239,28 @@ export default class FBProductParser {
       exteriorColor: details.exteriorColor.split(' ').at(-1)!,
       interiorColor: details.interiorColor.split(' ').at(-1)!,
     }
+
+    if (parsed.exteriorColor.includes('color')) {
+      parsed.exteriorColor = 'other'
+    }
+    if (parsed.interiorColor.includes('color')) {
+      parsed.interiorColor = 'other'
+    }
+
+    // To title case
+    for (const [key, value] of Object.entries(parsed)) {
+      if (key === 'description') continue
+      if (typeof value === 'string') {
+        // @ts-ignore
+        parsed[key] = titleCase(value)
+      }
+
+      if (key === 'location') {
+        const [city, state] = parsed[key].split(', ')
+        parsed.location = `${city}, ${state.toUpperCase()}`
+      }
+    }
+
+    return parsed
   }
 }
