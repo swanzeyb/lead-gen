@@ -159,7 +159,7 @@ export class ProductDetailSM {
         ) {
           this.currentData.sellerJoined = str
           this.currentState = 'Finished'
-        } else {
+        } else if (str.includes('joined')) {
           this.currentState = 'Seller Joined'
         }
         break
