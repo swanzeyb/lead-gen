@@ -38,7 +38,6 @@ CREATE TABLE `facebook:product` (
 	`description` text,
 	`sellerName` text,
 	`sellerJoined` integer,
-	`isSponsored` integer,
 	`id` text PRIMARY KEY NOT NULL,
 	`updated_at` integer
 );

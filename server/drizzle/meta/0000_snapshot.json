@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "569c2572-76a5-43e8-9f29-f302550249cc",
+  "id": "185d5001-965f-4537-855e-51e86769e27d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "dom:facebook": {
@@ -259,13 +259,6 @@
         },
         "sellerJoined": {
           "name": "sellerJoined",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "isSponsored": {
-          "name": "isSponsored",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
