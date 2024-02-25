@@ -1,6 +1,6 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
-const toExport = ['8c674234-a130-4d99-98ea-ffdbc4cf19e0'] // 0396e0f5-8546-48f5-beb4-507ebcdce666, c4115066-ea7f-4875-ab24-9d9f56ba5b47, 96148c12-fa34-4544-9170-178df32346fb
+const toExport = ['759e48b9-9ef7-4ec5-98e3-f92afadf4f6e'] // 0396e0f5-8546-48f5-beb4-507ebcdce666, c4115066-ea7f-4875-ab24-9d9f56ba5b47, 96148c12-fa34-4544-9170-178df32346fb
 
 for (const id of toExport) {
   FBData.getProductHTML({ id }).then(async (data) => {

@@ -279,6 +279,15 @@ export default class FBProductParser {
     if (parsed.fuel?.includes('flex')) {
       parsed.fuel = 'gasoline'
     }
+    if (parsed.fuel?.includes('hybrid')) {
+      parsed.fuel = 'hybrid'
+    }
+    if (parsed.fuel?.includes('diesel')) {
+      parsed.fuel = 'diesel'
+    }
+    if (parsed.fuel?.includes('gas')) {
+      parsed.fuel = 'gasoline'
+    }
 
     // To title case
     for (const [key, value] of Object.entries(parsed)) {
