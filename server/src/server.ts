@@ -1,13 +1,30 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
-const data = await FBData.getProductHTML({
-  id: 'cf306959-4857-4552-aead-6b17f4996e96',
-})
+const toExport = ['c4115066-ea7f-4875-ab24-9d9f56ba5b47']
 
-const extraction = await FBProductParser.extractDetails(data.html)
-// const parsed = await FBProductParser.parseDetails(extraction)
+for (const id of toExport) {
+  FBData.getProductHTML({ id }).then(async (data) => {
+    const extraction = await FBProductParser.extractDetails(data.html)
+    console.log(extraction)
+    const parsed = await FBProductParser.parseDetails(extraction)
 
-console.log(extraction)
+    Bun.write(
+      `./tests/product-parser-test-${id}.json`,
+      JSON.stringify({ parsed, html: data.html }, null, 2)
+    )
+
+    console.log(parsed)
+  })
+}
+
+// const data = await FBData.getProductHTML({
+//   id: 'cf306959-4857-4552-aead-6b17f4996e96',
+// })
+
+// const extraction = await FBProductParser.extractDetails(data.html)
+// // const parsed = await FBProductParser.parseDetails(extraction)
+
+// console.log(extraction)
 
 // const listings = await FBCatalogParser.parseDetails(extraction)
 
@@ -21,29 +38,28 @@ interface Handlers {
 }
 
 const handlers: Handlers = {
-  '/dom/facebook/catalog': {
-    POST: async (request: Request) => {
-      // Require body contents
-      if (!request.body) throw new Error('No body contents')
+  // '/dom/facebook/catalog': {
+  //   POST: async (request: Request) => {
+  //     // Require body contents
+  //     if (!request.body) throw new Error('No body contents')
 
-      // Add to index
-      const { htmlString } = (await request.json()) as { htmlString: string }
-      const domId = await FBData.setCatalogHTML(htmlString)
-      const details = await FBCatalogParser.extractDetails(htmlString)
-      const parsed = await FBCatalogParser.parseDetails(details)
-      const carIds = await FBData.setCatalog(parsed)
+  //     // Add to index
+  //     const { htmlString } = (await request.json()) as { htmlString: string }
+  //     const domId = await FBData.setCatalogHTML(htmlString)
+  //     const details = await FBCatalogParser.extractDetails(htmlString)
+  //     const parsed = await FBCatalogParser.parseDetails(details)
+  //     const carIds = await FBData.setCatalog(parsed)
 
-      // console.log({ domId, carIds })
-      console.log(parsed)
+  //     // console.log({ domId, carIds })
 
-      // Return with db id for dom content and ids for car ids
-      return new Response(JSON.stringify({ domId, carIds }), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-    },
-  },
+  //     // Return with db id for dom content and ids for car ids
+  //     return new Response(JSON.stringify({ domId, carIds }), {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     })
+  //   },
+  // },
   '/dom/facebook/product': {
     POST: async (request: Request) => {
       // Require body contents
@@ -52,6 +68,7 @@ const handlers: Handlers = {
       // Add to index
       const { htmlString } = (await request.json()) as { htmlString: string }
       const domId = await FBData.setProductHTML(htmlString)
+
       // const details = await FBProductParser.extractDetails(htmlString)
 
       // console.log(details)

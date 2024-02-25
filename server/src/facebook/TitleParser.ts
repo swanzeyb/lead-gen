@@ -7,11 +7,12 @@ const makeEdgeCaseList = [
 
 // ['Sport Utility', 'Utility Pickup', 'Minivan', 'Pickup', 'Wagon']
 const modelIdentifiers = new Set([
-  'Sport',
-  'Utility',
-  'Minivan',
-  'Pickup',
-  'Wagon',
+  'sport',
+  'utility',
+  'minivan',
+  'pickup',
+  'wagon',
+  'sedan',
 ])
 
 interface TitleDataUnsettled {
@@ -40,6 +41,7 @@ export class TitleSM {
   }
 
   input(str: string) {
+    // console.log(this.currentState, '|', str)
     switch (this.currentState) {
       case 'Start':
         this.currentState = 'Year'

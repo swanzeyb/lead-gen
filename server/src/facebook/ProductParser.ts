@@ -44,8 +44,9 @@ export class ProductDetailSM {
     | 'Next:Description'
     | 'Next:Seller'
     | 'Next:Seller Name'
-    | 'Next:Seller Joined'
+    | 'Seller Joined'
     | 'Finished'
+    | 'Next:Fuel Type'
   private currentData: DetailedCarListingUnsettled
 
   constructor() {
@@ -112,16 +113,24 @@ export class ProductDetailSM {
         // From here, there are optional fields that may or may not be present
         // so we need to check for them.
         if (str.includes('fuel')) {
-          this.currentData.fuel = str
+          if (str.length <= 'fuel type:'.length) {
+            this.currentState = 'Next:Fuel Type'
+          } else {
+            this.currentData.fuel = str
+          }
         } else if (str.includes('title')) {
           this.currentData.titleBrand = str
         } else if (str.includes('description')) {
           this.currentState = 'Next:Description'
         }
         break
+      case 'Next:Fuel Type':
+        this.currentData.fuel = str
+        this.currentState = 'Interior Color'
+        break
       case 'Next:Description':
         // Description can be multi-line, so we need to check for it.
-        if (str.includes('...') || str.includes('see more')) {
+        if (str.includes('see more') || str === this.currentData.location!) {
           this.currentState = 'Next:Seller'
         } else {
           this.currentData.description ??= ''
@@ -139,15 +148,14 @@ export class ProductDetailSM {
         }
         break
       case 'Next:Seller Name':
-        if (str.includes('joined')) {
-          this.currentState = 'Next:Seller Joined'
-        } else {
-          this.currentData.sellerName = str
-        }
+        this.currentState = 'Seller Joined'
+        this.currentData.sellerName = str
         break
-      case 'Next:Seller Joined':
-        this.currentData.sellerJoined = str
-        this.currentState = 'Finished'
+      case 'Seller Joined':
+        if (/^\d{4}$/.test(str)) {
+          this.currentData.sellerJoined = str
+          this.currentState = 'Finished'
+        }
     }
   }
 
@@ -246,7 +254,7 @@ export default class FBProductParser {
           details.description.includes('totaled')
         ? false
         : true,
-      sellerJoined: parseInt(details.sellerJoined),
+      sellerJoined: parseInt(details.sellerJoined.replace(/\D/g, '')),
       exteriorColor: details.exteriorColor.split(' ').at(-1)!,
       interiorColor: details.interiorColor.split(' ').at(-1)!,
     }
