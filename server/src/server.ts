@@ -1,13 +1,13 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 
-const catalog = await FBData.getProductHTML({
-  id: '1bcb9b4b-6629-43aa-b285-0376c453401f',
+const data = await FBData.getProductHTML({
+  id: 'cf306959-4857-4552-aead-6b17f4996e96',
 })
 
-const extraction = await FBProductParser.extractDetails(catalog.html)
-const parsed = await FBProductParser.parseDetails(extraction)
+const extraction = await FBProductParser.extractDetails(data.html)
+// const parsed = await FBProductParser.parseDetails(extraction)
 
-console.log(parsed)
+console.log(extraction)
 
 // const listings = await FBCatalogParser.parseDetails(extraction)
 
@@ -52,16 +52,16 @@ const handlers: Handlers = {
       // Add to index
       const { htmlString } = (await request.json()) as { htmlString: string }
       const domId = await FBData.setProductHTML(htmlString)
-      const details = await FBProductParser.extractDetails(htmlString)
+      // const details = await FBProductParser.extractDetails(htmlString)
 
-      console.log(details)
+      // console.log(details)
       // const parsed = await FBProductParser.parseDetails(details)
       // const carId = await FBData.setProduct(parsed)
 
       // console.log({ domId, carId })
 
       // Return with db id for dom content and ids for car ids
-      return new Response(JSON.stringify({ domId, details }), {
+      return new Response(JSON.stringify({ domId }), {
         headers: {
           'Content-Type': 'application/json',
         },

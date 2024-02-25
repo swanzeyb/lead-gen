@@ -54,6 +54,7 @@ export class ProductDetailSM {
   }
 
   input(str: string) {
+    console.log(this.currentState, '|', str)
     switch (this.currentState) {
       case 'Start':
         if (/^\d{4} \w+ \w+.*/.test(str)) {
@@ -86,7 +87,17 @@ export class ProductDetailSM {
         }
         break
       case 'Transmission':
-        if (str.includes('exterior')) {
+        if (str.includes('exterior') && str.includes('interior')) {
+          // Some are on the same line.
+          const colorParts = str.split(' ')
+          const middle = Math.floor(colorParts.length / 2)
+
+          // Now mock the two lines
+          this.currentData.exteriorColor = colorParts.slice(0, middle).join(' ')
+          this.currentData.interiorColor = colorParts.slice(middle).join(' ')
+
+          this.currentState = 'Interior Color'
+        } else if (str.includes('exterior')) {
           this.currentState = 'Exterior Color'
           this.currentData.exteriorColor = str
         }
