@@ -1,4 +1,4 @@
-interface BasicCarListing {
+export interface BasicCarListing {
   URL: string
   fbID: string
   price: number

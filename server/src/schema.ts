@@ -10,19 +10,18 @@ export const domFacebook = sqliteTable('dom:facebook', {
 export const facebookCatalog = sqliteTable('facebook:catalog', {
   url: text('url'),
   fbID: text('fbID').unique(),
-  first_price: text('first_price'),
-  last_price: text('last_price'),
+  first_price: integer('first_price'),
+  last_price: integer('last_price'),
   first_seen: integer('first_seen', { mode: 'timestamp_ms' }),
   last_seen: integer('last_seen', { mode: 'timestamp_ms' }),
   title: text('title'),
   location: text('location'),
-  miles: text('miles'),
+  miles: integer('miles'),
   id: text('id').primaryKey(),
   status: text('status', { enum: ['pending', 'complete', 'error'] }),
 })
 
 export const facebookProduct = sqliteTable('facebook:product', {
-  url: text('url'),
   fbID: text('fbID').unique(),
   title: text('title'),
   year: integer('year'),
@@ -42,7 +41,8 @@ export const facebookProduct = sqliteTable('facebook:product', {
   isCleanTitle: integer('isCleanTitle', { mode: 'boolean' }),
   description: text('description'),
   sellerName: text('sellerName'),
-  sellerJoined: integer('sellerJoined', { mode: 'timestamp_ms' }),
+  sellerJoined: integer('sellerJoined'),
   isSponsored: integer('isSponsored', { mode: 'boolean' }),
   id: text('id').primaryKey(),
+  updated_at: integer('updated_at', { mode: 'timestamp_ms' }),
 })

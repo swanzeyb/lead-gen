@@ -168,7 +168,7 @@ export class ProductDetailSM {
 }
 
 import type { TitleData } from './TitleParser'
-interface DetailedCarListing extends TitleData {
+export interface DetailedCarListing extends TitleData {
   title: string
   price: number
   location: string
