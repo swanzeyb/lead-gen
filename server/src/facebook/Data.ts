@@ -2,7 +2,7 @@ import type { BasicCarListing } from './CatalogParser'
 import type { DetailedCarListing } from './ProductParser'
 import { db } from '../db'
 import { domFacebook, facebookCatalog, facebookProduct } from '../schema'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and, desc, like, lte } from 'drizzle-orm'
 
 type DBInsertCatalog = typeof facebookCatalog.$inferInsert
 type FBInsertCatalog = Omit<DBInsertCatalog, 'id'> & BasicCarListing
@@ -136,6 +136,29 @@ export default class FBData {
       .orderBy(desc(facebookCatalog.last_seen))
       .limit(limit)
       .where(id ? eq(facebookCatalog.id, id) : undefined)
+  }
+
+  static async searchCatalog({
+    query,
+    price = 100000,
+    limit = 1,
+  }: {
+    query: string
+    price?: number
+    limit?: number
+  }) {
+    return db
+      .select()
+      .from(facebookCatalog)
+      .orderBy(desc(facebookCatalog.last_seen))
+      .limit(limit)
+      .where(
+        and(
+          eq(facebookCatalog.status, 'pending'),
+          like(facebookCatalog.title, `%${query}%`),
+          lte(facebookCatalog.last_price, price)
+        )
+      )
   }
 
   static async setCatalog(listings: FBInsertCatalog | FBInsertCatalog[]) {

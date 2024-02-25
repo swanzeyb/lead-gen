@@ -21,47 +21,72 @@ interface Handlers {
 }
 
 const handlers: Handlers = {
-  // '/dom/facebook/catalog': {
-  //   POST: async (request: Request) => {
-  //     // Require body contents
-  //     if (!request.body) throw new Error('No body contents')
-
-  //     // Add to index
-  //     const { htmlString } = (await request.json()) as { htmlString: string }
-  //     const domId = await FBData.setCatalogHTML(htmlString)
-  //     const details = await FBCatalogParser.extractDetails(htmlString)
-  //     const parsed = await FBCatalogParser.parseDetails(details)
-  //     const carIds = await FBData.setCatalog(parsed)
-
-  //     // console.log({ domId, carIds })
-
-  //     // Return with db id for dom content and ids for car ids
-  //     return new Response(JSON.stringify({ domId, carIds }), {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //   },
-  // },
-  '/dom/facebook/product': {
+  '/dom/facebook/catalog': {
     POST: async (request: Request) => {
       // Require body contents
       if (!request.body) throw new Error('No body contents')
 
       // Add to index
       const { htmlString } = (await request.json()) as { htmlString: string }
-      const domId = await FBData.setProductHTML(htmlString)
+      const domId = await FBData.setCatalogHTML(htmlString)
 
-      // const details = await FBProductParser.extractDetails(htmlString)
-
-      // console.log(details)
-      // const parsed = await FBProductParser.parseDetails(details)
-      // const carId = await FBData.setProduct(parsed)
-
-      // console.log({ domId, carId })
+      try {
+        const details = await FBCatalogParser.extractDetails(htmlString)
+        const parsed = await FBCatalogParser.parseDetails(details)
+        await FBData.setCatalog(parsed)
+      } catch (e) {
+        console.log(e)
+      }
 
       // Return with db id for dom content and ids for car ids
       return new Response(JSON.stringify({ domId }), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    },
+  },
+  '/dom/facebook/product': {
+    POST: async (request: Request) => {
+      // Require body contents
+      if (!request.body) throw new Error('No body contents')
+
+      // Add to index
+      const { htmlString, fbID } = (await request.json()) as {
+        htmlString: string
+        fbID: string
+      }
+      const domId = await FBData.setProductHTML(htmlString)
+
+      try {
+        const details = await FBProductParser.extractDetails(htmlString)
+        const parsed = await FBProductParser.parseDetails(details)
+
+        await FBData.setProduct({
+          ...parsed,
+          fbID,
+        })
+      } catch (e) {
+        console.log(e)
+      }
+
+      // Return with db id for dom content and ids for car ids
+      return new Response(JSON.stringify({ domId }), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    },
+  },
+  '/worker/facebook/product/todo': {
+    GET: async (request: Request) => {
+      const jobs = await FBData.searchCatalog({
+        limit: 1,
+        query: 'Subaru',
+        price: 7000,
+      }).catch((e) => console.log(e))
+
+      return new Response(JSON.stringify(jobs), {
         headers: {
           'Content-Type': 'application/json',
         },

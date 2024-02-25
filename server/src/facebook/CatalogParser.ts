@@ -1,3 +1,5 @@
+import { titleCase } from 'title-case'
+
 export interface BasicCarListing {
   URL: string
   fbID: string
@@ -139,7 +141,7 @@ export default class FBCatalogParser {
         URL: listing.URL,
         fbID: listing.fbID,
         price: parseInt(listing.price.replace(/\D/g, '')),
-        title: listing.title,
+        title: titleCase(listing.title),
         location: listing.location,
         miles: parseInt(listing.miles.replace(/\D/g, '')),
       }
