@@ -44,9 +44,10 @@ export class ProductDetailSM {
     | 'Next:Description'
     | 'Next:Seller'
     | 'Next:Seller Name'
-    | 'Seller Joined'
+    | 'Next:Seller Joined'
     | 'Finished'
     | 'Next:Fuel Type'
+    | 'Seller Joined'
   private currentData: DetailedCarListingUnsettled
 
   constructor() {
@@ -148,14 +149,24 @@ export class ProductDetailSM {
         }
         break
       case 'Next:Seller Name':
-        this.currentState = 'Seller Joined'
+        this.currentState = 'Next:Seller Joined'
         this.currentData.sellerName = str
         break
-      case 'Seller Joined':
-        if (/^\d{4}$/.test(str)) {
+      case 'Next:Seller Joined':
+        if (
+          str.includes('joined') &&
+          str.length > 'joined facebook in '.length
+        ) {
           this.currentData.sellerJoined = str
           this.currentState = 'Finished'
+        } else {
+          this.currentState = 'Seller Joined'
         }
+        break
+      case 'Seller Joined':
+        this.currentData.sellerJoined = str
+        this.currentState = 'Finished'
+        break
     }
   }
 
