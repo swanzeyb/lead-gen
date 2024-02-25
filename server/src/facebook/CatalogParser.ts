@@ -140,7 +140,9 @@ export default class FBCatalogParser {
       return {
         URL: listing.URL,
         fbID: listing.fbID,
-        price: parseInt(listing.price.replace(/\D/g, '')),
+        price: listing.price.includes('k')
+          ? parseInt(listing.price.replace(/\D/g, '')) * 1000
+          : parseInt(listing.price.replace(/\D/g, '')),
         title: titleCase(listing.title),
         location: listing.location,
         miles: parseInt(listing.miles.replace(/\D/g, '')),
