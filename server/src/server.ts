@@ -1,6 +1,7 @@
 import FBData from './facebook/Data'
 
-const catalog = await FBData.getCatalog()
+const catalog = await FBData.getCatalogHTML()
+console.log(catalog)
 
 // interface Handlers {
 //   [key: string]: {

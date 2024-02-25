@@ -116,7 +116,10 @@ export default class FBData {
     return index
   }
 
-  static async getProduct({ id, limit = 1 }: { id?: string; limit?: number }) {
+  static async getProduct({
+    id,
+    limit = 1,
+  }: { id?: string; limit?: number } = {}) {
     return db
       .select()
       .from(facebookProduct)
@@ -159,7 +162,7 @@ export default class FBData {
   }: {
     id?: string
     limit?: number
-  }) {
+  } = {}) {
     return this.getHTML({ type: 'post', id, limit })
   }
 
@@ -167,7 +170,10 @@ export default class FBData {
     return this.addHTML(html, 'post')
   }
 
-  static async getCatalog({ id, limit = 1 }: { id?: string; limit?: number }) {
+  static async getCatalog({
+    id,
+    limit = 1,
+  }: { id?: string; limit?: number } = {}) {
     return db
       .select()
       .from(facebookCatalog)
@@ -215,7 +221,7 @@ export default class FBData {
   }: {
     id?: string
     limit?: number
-  }) {
+  } = {}) {
     return this.getHTML({ type: 'index', id, limit })
   }
 
