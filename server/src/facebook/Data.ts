@@ -5,7 +5,7 @@ import { domFacebook, facebookCatalog, facebookProduct } from '../schema'
 import { eq, and, desc, like, lte } from 'drizzle-orm'
 
 type DBInsertCatalog = typeof facebookCatalog.$inferInsert
-type FBInsertCatalog = Omit<DBInsertCatalog, 'id'> & BasicCarListing
+export type FBInsertCatalog = Omit<DBInsertCatalog, 'id'> & BasicCarListing
 
 type DBInsertProduct = typeof facebookProduct.$inferInsert
 type FBInsertProduct = Omit<DBInsertProduct, 'id'> & DetailedCarListing
@@ -129,7 +129,7 @@ export default class FBData {
   static async getCatalog({
     id,
     limit = 1,
-  }: { id?: string; limit?: number } = {}) {
+  }: { id?: string; limit?: number } = {}): Promise<DBInsertCatalog[]> {
     return db
       .select()
       .from(facebookCatalog)
@@ -192,6 +192,19 @@ export default class FBData {
         )
       })
       .then((resultIds) => resultIds.flat())
+  }
+
+  static async updateCatalogStatus({
+    fbID,
+    status,
+  }: {
+    fbID: string
+    status: 'pending' | 'complete' | 'error'
+  }) {
+    return db
+      .update(facebookCatalog)
+      .set({ status })
+      .where(eq(facebookCatalog.fbID, fbID))
   }
 
   static async getCatalogHTML({

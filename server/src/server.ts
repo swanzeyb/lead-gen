@@ -1,4 +1,12 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
+import Airtable from './Airtable'
+
+// // @ts-ignore
+// const doc = await FBData.getHTML({ type: 'index' })
+// const details = await FBCatalogParser.extractDetails(doc.html)
+// const parsed = await FBCatalogParser.parseDetails(details)
+
+const data = await FBData.getCatalog({ limit: 5 })
 
 // const data = await FBData.getProductHTML({
 //   id: 'cf306959-4857-4552-aead-6b17f4996e96',
@@ -66,6 +74,8 @@ const handlers: Handlers = {
           ...parsed,
           fbID,
         })
+
+        await FBData.updateCatalogStatus({ fbID, status: 'complete' })
       } catch (e) {
         console.log(e)
       }
