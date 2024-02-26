@@ -87,22 +87,62 @@ const handlers: Handlers = {
     },
   },
   '/llm/infer-model': {
-    POST: async (request: Request) => {
-      const url = new URL(request.url)
-      const title = url.searchParams.get('title')
-      const options = url.searchParams.get('options')?.split(',')
+    GET: async (request: Request) => {
+      try {
+        const url = new URL(request.url)
+        const title = url.searchParams.get('title')
+        const options = url.searchParams.get('options')?.split(',')
 
-      if (!title) throw new Error('No title provided')
-      if (!options) throw new Error('No options provided')
-      console.log(title, options)
+        console.log(url, title, options)
 
-      const model = await LLM.guessModel(title, options)
+        if (!title) throw new Error('No title provided')
+        if (!options) throw new Error('No options provided')
+        console.log(title, options)
 
-      return new Response(JSON.stringify({ model }), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+        const model = await LLM.guessModel(title, options)
+
+        return new Response(JSON.stringify({ model }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (e) {
+        console.log('Error guessing model', { cause: e })
+        return new Response(JSON.stringify({ cause: e }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          status: 500,
+        })
+      }
+    },
+  },
+  '/llm/infer-make': {
+    GET: async (request: Request) => {
+      try {
+        const url = new URL(request.url)
+        const title = url.searchParams.get('title')
+        const options = url.searchParams.get('options')?.split(',')
+
+        if (!title) throw new Error('No title provided')
+        if (!options) throw new Error('No options provided')
+
+        const make = await LLM.guessMake(title, options)
+
+        return new Response(JSON.stringify({ make }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (e) {
+        console.log('Error guessing make', { cause: e })
+        return new Response(JSON.stringify({ cause: e }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          status: 500,
+        })
+      }
     },
   },
 }

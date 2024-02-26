@@ -290,27 +290,71 @@ export default class Manheim {
     return result
   }
 
-  static async doEvaluation(tabId: number, title: string, miles: string) {
-    await this.clickYearInput(tabId)
-    await this.selectYear(tabId, title.split(' ')[0])
-    await this.clickMakeInput(tabId)
-    const makeOptions = await this.getMakeOptions(tabId)
-    const makeGuess = await fetch(`${SERVER_URL}/llm/infer-model?=`, {
-      method: 'GET',
-      body: JSON.stringify({ title, options: makeOptions }),
-    })
-      .then((r) => r.json())
-      .catch((e) => console.log(e))
-    console.log(makeGuess)
+  static async timeout(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 
-    // await this.selectMake(tabId, makeOptions?.[0] || make)
-    // await this.clickModelInput(tabId)
-    // const modelOptions = await this.getModelOptions(tabId)
-    // await this.selectModel(tabId, modelOptions?.[0] || model)
-    // await this.clickStyleInput(tabId)
-    // const styleOptions = await this.getStyleOptions(tabId)
-    // await this.selectStyle(tabId, styleOptions?.[0] || style)
-    // await this.submitMileAdj(tabId, miles)
+  static async doEvaluation(tabId: number, title: string, miles: string) {
+    try {
+      await this.timeout(1500)
+      console.log('ready')
+      await this.clickYearInput(tabId)
+      await this.timeout(800)
+      await this.selectYear(tabId, title.split(' ')[0])
+      await this.timeout(800)
+      await this.clickMakeInput(tabId)
+      await this.timeout(800)
+
+      // Fetch make options
+      const makeOptions = await this.getMakeOptions(tabId)
+      if (!makeOptions) throw new Error('No make options found')
+
+      const makeChoice = await fetch(
+        `${SERVER_URL}/llm/infer-make?title=${title}&options=${makeOptions?.join(
+          ','
+        )}`
+      )
+        .then((r) => r.json())
+        .then((r) => r.make)
+      if (!makeChoice) throw new Error('No make choice returned')
+      if (!makeOptions.includes(makeChoice))
+        throw new Error('Invalid make choice')
+
+      await this.selectMake(tabId, makeChoice)
+      await this.timeout(800)
+      await this.clickModelInput(tabId)
+      await this.timeout(800)
+
+      // Fetch model options
+      const modelOptions = await this.getModelOptions(tabId)
+      if (!modelOptions) throw new Error('No model options found')
+
+      const modelChoice = await fetch(
+        `${SERVER_URL}/llm/infer-model?title=${title}&options=${modelOptions?.join(
+          ','
+        )}`
+      )
+        .then((r) => r.json())
+        .then((r) => r.model)
+      if (!modelChoice) throw new Error('No model choice returned')
+      if (!modelOptions.includes(modelChoice))
+        throw new Error('Invalid model choice')
+
+      await this.selectModel(tabId, modelChoice)
+      await this.timeout(800)
+      await this.clickStyleInput(tabId)
+      await this.timeout(800)
+
+      // Fetch style options
+      const styleOptions = await this.getStyleOptions(tabId)
+      console.log(styleOptions)
+
+      // await this.selectStyle(tabId, styleOptions?.[0] || style)
+      // await this.submitMileAdj(tabId, miles)
+    } catch (e) {
+      console.log('Error evaluating', { cause: e })
+    }
+
     return await this.getHTML(tabId)
   }
 }

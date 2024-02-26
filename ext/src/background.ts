@@ -75,10 +75,13 @@ setInterval(async function () {
 const toFetchMMR = new Set<number>()
 
 import Manheim from './manheim'
+import debounce from 'debounce'
 
-chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
-  console.log(changeInfo.status, tab.url)
-
+const onUpdate = debounce(async function (
+  tabId: number,
+  changeInfo: any,
+  tab: any
+) {
   if (changeInfo.status === 'complete' && tab.url) {
     const url = new URL(tab.url)
 
@@ -86,9 +89,9 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
       // toRefresh.add(tabId)
     } else if (url.pathname.includes('/marketplace/item/')) {
       // toFetchProduct.add(tabId)
-    } else if ((url.pathname = '/ui-mmr/')) {
+    } else if (url.pathname === '/ui-mmr/') {
       toFetchMMR.add(tabId)
-      console.log(tabId)
+      console.log(changeInfo.status, url, tab.url, tab.id)
 
       await Manheim.doEvaluation(
         tabId,
@@ -97,4 +100,7 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
       )
     }
   }
-})
+},
+800)
+
+chrome.tabs.onUpdated.addListener(onUpdate)
