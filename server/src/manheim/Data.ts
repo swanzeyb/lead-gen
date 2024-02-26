@@ -1,6 +1,13 @@
 import { db } from '../db'
-import { domManheim } from '../schema'
+import { domManheim, manheimValues } from '../schema'
 import { eq, desc } from 'drizzle-orm'
+
+interface ManheimData {
+  low: number
+  average: number
+  high: number
+  adjusted: number
+}
 
 export default class MHData {
   private static async addHTML(htmlString: string) {
@@ -62,5 +69,33 @@ export default class MHData {
 
   static getValuesHTML({ id, limit }: { id?: string; limit?: number }) {
     return this.getHTML({ id, limit })
+  }
+
+  static setValues(data: ManheimData[] | ManheimData) {
+    const values = Array.isArray(data) ? data : [data]
+    const now = new Date()
+
+    const rows = values.map((item) => ({
+      ...item,
+      id: crypto.randomUUID(), // Add the id property
+      updated_at: now,
+    }))
+
+    return db
+      .transaction((tx) => {
+        return Promise.all(
+          rows.map((item) =>
+            tx
+              .insert(manheimValues)
+              .values(item)
+              .onConflictDoUpdate({
+                target: manheimValues.id,
+                set: { updated_at: now }, // todo
+              })
+              .returning({ id: facebookProduct.id })
+          )
+        )
+      })
+      .then((resultIds) => resultIds.flat())
   }
 }

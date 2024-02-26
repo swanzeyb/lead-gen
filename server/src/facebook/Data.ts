@@ -103,7 +103,7 @@ export default class FBData {
               .values(item)
               .onConflictDoUpdate({
                 target: facebookProduct.fbID,
-                set: { updated_at: now }, // YOU LEFT OFF HERE ASSHOLE
+                set: { updated_at: now },
               })
               .returning({ id: facebookProduct.id })
           )
