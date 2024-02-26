@@ -1,26 +1,9 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
-import Airtable from './Airtable'
+import LLM from './LLM'
 
-// // @ts-ignore
-// const doc = await FBData.getHTML({ type: 'index' })
-// const details = await FBCatalogParser.extractDetails(doc.html)
-// const parsed = await FBCatalogParser.parseDetails(details)
-
-const data = await FBData.getCatalog({ limit: 5 })
-
-// const data = await FBData.getProductHTML({
-//   id: 'cf306959-4857-4552-aead-6b17f4996e96',
-// })
-
-// const extraction = await FBProductParser.extractDetails(data.html)
-// // const parsed = await FBProductParser.parseDetails(extraction)
-
-// console.log(extraction)
-
-// const listings = await FBCatalogParser.parseDetails(extraction)
-
-// const ids = await FBData.setCatalog(listings)
-// console.log(ids)
+LLM.guessModel('2012 Volkswagen golf TDI Hatchback 4D')
+  .then((r) => console.log(r))
+  .catch((e) => console.log(e))
 
 interface Handlers {
   [key: string]: {
@@ -97,6 +80,25 @@ const handlers: Handlers = {
       }).catch((e) => console.log(e))
 
       return new Response(JSON.stringify(jobs), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    },
+  },
+  '/llm/infer-model': {
+    POST: async (request: Request) => {
+      const url = new URL(request.url)
+      const title = url.searchParams.get('title')
+      const options = url.searchParams.get('options')?.split(',')
+
+      if (!title) throw new Error('No title provided')
+      if (!options) throw new Error('No options provided')
+      console.log(title, options)
+
+      const model = await LLM.guessModel(title, options)
+
+      return new Response(JSON.stringify({ model }), {
         headers: {
           'Content-Type': 'application/json',
         },

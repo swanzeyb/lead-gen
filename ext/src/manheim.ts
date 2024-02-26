@@ -1,3 +1,5 @@
+const SERVER_URL = `http://localhost:3001`
+
 export default class Manheim {
   static async clickYearInput(tabId: number) {
     const [{ result }] = await chrome.scripting.executeScript({
@@ -293,7 +295,13 @@ export default class Manheim {
     await this.selectYear(tabId, title.split(' ')[0])
     await this.clickMakeInput(tabId)
     const makeOptions = await this.getMakeOptions(tabId)
-    console.log(makeOptions)
+    const makeGuess = await fetch(`${SERVER_URL}/llm/infer-model?=`, {
+      method: 'GET',
+      body: JSON.stringify({ title, options: makeOptions }),
+    })
+      .then((r) => r.json())
+      .catch((e) => console.log(e))
+    console.log(makeGuess)
 
     // await this.selectMake(tabId, makeOptions?.[0] || make)
     // await this.clickModelInput(tabId)
