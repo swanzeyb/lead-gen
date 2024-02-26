@@ -74,6 +74,8 @@ setInterval(async function () {
 
 const toFetchMMR = new Set<number>()
 
+import Manheim from './manheim'
+
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
   console.log(changeInfo.status, tab.url)
 
@@ -81,11 +83,18 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     const url = new URL(tab.url)
 
     if (url.pathname === '/marketplace/category/vehicles') {
-      toRefresh.add(tabId)
+      // toRefresh.add(tabId)
     } else if (url.pathname.includes('/marketplace/item/')) {
-      toFetchProduct.add(tabId)
+      // toFetchProduct.add(tabId)
     } else if ((url.pathname = '/ui-mmr/')) {
       toFetchMMR.add(tabId)
+      console.log(tabId)
+
+      await Manheim.doEvaluation(
+        tabId,
+        '2012 Volkswagen golf TDI Hatchback 4D',
+        '180000'
+      )
     }
   }
 })

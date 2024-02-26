@@ -50,7 +50,7 @@ export default class Airtable {
         fetch(`https://api.airtable.com/v0/${marketplaceID}`, {
           method: 'PUT',
           headers: {
-            Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
+            Authorization: `Bearer ${process.env.AIRTABLE_KEY}`,
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: JSON.stringify({
