@@ -45,3 +45,18 @@ export const facebookProduct = sqliteTable('facebook:product', {
   id: text('id').primaryKey(),
   updated_at: integer('updated_at', { mode: 'timestamp_ms' }),
 })
+
+export const domManheim = sqliteTable('dom:manheim', {
+  id: text('id').primaryKey(),
+  timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
+  html: blob('html', { mode: 'buffer' }),
+})
+
+export const manheimValues = sqliteTable('manheim:values', {
+  id: text('id').primaryKey(),
+  low: integer('low'),
+  average: integer('average'),
+  high: integer('high'),
+  adjusted: integer('adjusted'),
+  timestamp: integer('timestamp', { mode: 'timestamp_ms' }),
+})

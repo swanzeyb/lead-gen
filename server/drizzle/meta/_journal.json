@@ -8,6 +8,13 @@
       "when": 1708886876548,
       "tag": "0000_boring_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1708978416065,
+      "tag": "0001_fat_imperial_guard",
+      "breakpoints": true
     }
   ]
 }
