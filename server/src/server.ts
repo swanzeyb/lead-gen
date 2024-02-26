@@ -1,4 +1,5 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
+import MHData from './manheim/Data'
 import LLM from './LLM'
 
 console.log('Starting server')
@@ -10,6 +11,33 @@ interface Handlers {
 }
 
 const handlers: Handlers = {
+  '/dom/manheim/values': {
+    POST: async (request: Request) => {
+      try {
+        // Require body contents
+        if (!request.body) throw new Error('No body contents')
+
+        // Add to index
+        const { values } = (await request.json()) as { values: string }
+        const domId = await MHData.setValuesHTML(values)
+
+        // Return with db id for dom content and ids for car ids
+        return new Response(JSON.stringify({ domId }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (e) {
+        console.log('Error adding manheim html', e)
+        return new Response(JSON.stringify({ cause: e }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          status: 500,
+        })
+      }
+    },
+  },
   '/dom/facebook/catalog': {
     POST: async (request: Request) => {
       // Require body contents

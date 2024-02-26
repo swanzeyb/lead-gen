@@ -55,4 +55,12 @@ export default class MHData {
 
     return index
   }
+
+  static setValuesHTML(htmlString: string) {
+    return this.addHTML(htmlString)
+  }
+
+  static getValuesHTML({ id, limit }: { id?: string; limit?: number }) {
+    return this.getHTML({ id, limit })
+  }
 }
