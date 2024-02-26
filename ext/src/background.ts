@@ -77,6 +77,8 @@ const toFetchMMR = new Set<number>()
 import Manheim from './manheim'
 import debounce from 'debounce'
 
+let evalInProgress = false
+
 const onUpdate = debounce(async function (
   tabId: number,
   changeInfo: any,
@@ -89,15 +91,17 @@ const onUpdate = debounce(async function (
       // toRefresh.add(tabId)
     } else if (url.pathname.includes('/marketplace/item/')) {
       // toFetchProduct.add(tabId)
-    } else if (url.pathname === '/ui-mmr/') {
+    } else if (url.pathname === '/ui-mmr/' && !evalInProgress) {
       toFetchMMR.add(tabId)
       console.log(changeInfo.status, url, tab.url, tab.id)
 
+      evalInProgress = true
       await Manheim.doEvaluation(
         tabId,
         '2012 Volkswagen golf TDI Hatchback 4D',
         '180000'
       )
+      evalInProgress = false
     }
   }
 },

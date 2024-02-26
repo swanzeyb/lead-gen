@@ -1,9 +1,7 @@
 import { FBData, FBCatalogParser, FBProductParser } from './facebook'
 import LLM from './LLM'
 
-LLM.guessModel('2012 Volkswagen golf TDI Hatchback 4D')
-  .then((r) => console.log(r))
-  .catch((e) => console.log(e))
+console.log('Starting server')
 
 interface Handlers {
   [key: string]: {
@@ -93,11 +91,8 @@ const handlers: Handlers = {
         const title = url.searchParams.get('title')
         const options = url.searchParams.get('options')?.split(',')
 
-        console.log(url, title, options)
-
         if (!title) throw new Error('No title provided')
         if (!options) throw new Error('No options provided')
-        console.log(title, options)
 
         const model = await LLM.guessModel(title, options)
 
@@ -136,6 +131,34 @@ const handlers: Handlers = {
         })
       } catch (e) {
         console.log('Error guessing make', { cause: e })
+        return new Response(JSON.stringify({ cause: e }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          status: 500,
+        })
+      }
+    },
+  },
+  '/llm/infer-style': {
+    GET: async (request: Request) => {
+      try {
+        const url = new URL(request.url)
+        const title = url.searchParams.get('title')
+        const options = url.searchParams.get('options')?.split(',')
+
+        if (!title) throw new Error('No title provided')
+        if (!options) throw new Error('No options provided')
+
+        const style = await LLM.guessStyle(title, options)
+
+        return new Response(JSON.stringify({ style }), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (e) {
+        console.log('Error guessing style', { cause: e })
         return new Response(JSON.stringify({ cause: e }), {
           headers: {
             'Content-Type': 'application/json',

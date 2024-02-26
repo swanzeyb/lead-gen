@@ -255,16 +255,7 @@ export default class Manheim {
     return result
   }
 
-  static async setMileAdj(tabId: number) {
-    const [{ result }] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: () => {},
-    })
-
-    return result
-  }
-
-  static async submitMileAdj(tabId: number, miles: string) {
+  static async setMileAdj(tabId: number, miles: string) {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId },
       func: (miles: string) => {
@@ -274,6 +265,20 @@ export default class Manheim {
         } catch (e) {}
       },
       args: [miles],
+    })
+
+    return result
+  }
+
+  static async submitMileAdj(tabId: number) {
+    const [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        try {
+          // @ts-ignore
+          document.querySelector('#Odometer > * button').click()
+        } catch (e) {}
+      },
     })
 
     return result
@@ -318,7 +323,9 @@ export default class Manheim {
         .then((r) => r.make)
       if (!makeChoice) throw new Error('No make choice returned')
       if (!makeOptions.includes(makeChoice))
-        throw new Error('Invalid make choice')
+        throw new Error('Invalid make choice', {
+          cause: { makeChoice, makeOptions },
+        })
 
       await this.selectMake(tabId, makeChoice)
       await this.timeout(800)
@@ -338,7 +345,9 @@ export default class Manheim {
         .then((r) => r.model)
       if (!modelChoice) throw new Error('No model choice returned')
       if (!modelOptions.includes(modelChoice))
-        throw new Error('Invalid model choice')
+        throw new Error('Invalid model choice', {
+          cause: { modelChoice, modelOptions },
+        })
 
       await this.selectModel(tabId, modelChoice)
       await this.timeout(800)
@@ -347,10 +356,26 @@ export default class Manheim {
 
       // Fetch style options
       const styleOptions = await this.getStyleOptions(tabId)
-      console.log(styleOptions)
+      if (!styleOptions) throw new Error('No style options found')
 
-      // await this.selectStyle(tabId, styleOptions?.[0] || style)
-      // await this.submitMileAdj(tabId, miles)
+      const styleChoice = await fetch(
+        `${SERVER_URL}/llm/infer-style?title=${title}&options=${styleOptions?.join(
+          ','
+        )}`
+      )
+        .then((r) => r.json())
+        .then((r) => r.style)
+      if (!styleChoice) throw new Error('No style choice returned')
+      if (!styleOptions.includes(styleChoice))
+        throw new Error('Invalid style choice', {
+          cause: { styleChoice, styleOptions },
+        })
+
+      await this.selectStyle(tabId, styleChoice)
+      await this.timeout(800)
+      await this.setMileAdj(tabId, miles)
+      await this.timeout(800)
+      await this.submitMileAdj(tabId)
     } catch (e) {
       console.log('Error evaluating', { cause: e })
     }
