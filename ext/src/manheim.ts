@@ -372,7 +372,7 @@ export default class Manheim {
         })
 
       await this.selectStyle(tabId, styleChoice)
-      await this.timeout(800)
+      await this.timeout(800) // TODO: Wait for page to load, listen for onComplete?
       await this.setMileAdj(tabId, miles)
       await this.timeout(800)
       await this.submitMileAdj(tabId)
