@@ -1,19 +1,31 @@
-import { useEffect, useState } from 'react'
-import Table from './Table'
-import { Button } from '@mui/material'
+import { useState, useEffect, useSyncExternalStore } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Box, Grid, TextField } from '@mui/material'
 
 export default function App() {
-  const [info, setInfo] = useState<any>()
+  const [costs, setCosts] = useState(new Map<string, number>())
 
-  useEffect(() => {
-    setInterval(() => {})
-  }, [])
+  const addCost = (label: string, cost: number) => {
+    setCosts((prev) => new Map([...prev, [label, cost]]))
+  }
+  const removeCost = (label: string) => {
+    setCosts((prev) => {
+      const newMap = new Map(prev)
+      newMap.delete(label)
+      return newMap
+    })
+  }
 
   return (
-    <div>
-      <pre>{JSON.stringify(info, null, 2)}</pre>
-      {/* <pre>{chrome.storage}</pre> */}
-      {/* <Button onClick={refresh}>Refresh Page</Button> */}
-    </div>
+    <Box>
+      <Grid container>
+        <Grid item>
+          <TextField id="standard-basic" label="Standard" variant="standard" />
+        </Grid>
+        <Grid item>
+          <TextField id="standard-basic" label="Standard" variant="standard" />
+        </Grid>
+      </Grid>
+    </Box>
   )
 }
