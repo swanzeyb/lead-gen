@@ -82,24 +82,22 @@ const onUpdate = debounce(async function (
   changeInfo: any,
   tab: any
 ) {
-  if (changeInfo.status === 'complete' && tab.url) {
-    const url = new URL(tab.url)
-
-    if (url.pathname === '/marketplace/category/vehicles') {
-      // toRefresh.add(tabId)
-    } else if (url.pathname.includes('/marketplace/item/')) {
-      // toFetchProduct.add(tabId)
-    } else if (url.pathname === '/ui-mmr/') {
-      toFetchMMR.add(tabId)
-      console.log(changeInfo.status, url, tab.url, tab.id)
-
-      Manheim.doEvaluation(
-        tabId,
-        '2012 Volkswagen golf TDI Hatchback 4D',
-        '180000'
-      )
-    }
-  }
+  // if (changeInfo.status === 'complete' && tab.url) {
+  //   const url = new URL(tab.url)
+  //   if (url.pathname === '/marketplace/category/vehicles') {
+  //     // toRefresh.add(tabId)
+  //   } else if (url.pathname.includes('/marketplace/item/')) {
+  //     // toFetchProduct.add(tabId)
+  //   } else if (url.pathname === '/ui-mmr/') {
+  //     toFetchMMR.add(tabId)
+  //     console.log(changeInfo.status, url, tab.url, tab.id)
+  //     Manheim.doEvaluation(
+  //       tabId,
+  //       '2012 Volkswagen golf TDI Hatchback 4D',
+  //       '180000'
+  //     )
+  //   }
+  // }
 },
 800)
 
