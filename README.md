@@ -1,3 +1,7 @@
+# For research purpose only
+
+This is not suited for real world use, it's more of a project out of curiosity and practice.
+
 # workspaces
 
 To install dependencies:
